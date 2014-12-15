@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Configure PUBLIC "-//Jetty//Configure//EN" "http://www.eclipse.org/jetty/configure.dtd">
+ 
+<Configure class="org.eclipse.jetty.webapp.WebAppContext">
+    <!-- Allow directory symbolic links  -->
+    <Call name="addAliasCheck">
+        <Arg>
+            <New class="org.eclipse.jetty.server.handler.ContextHandler$ApprovePathPrefixAliases"/>
+      </Arg>
+    </Call>
+    <!-- Allow file symbolic links  -->
+    <Call name="addAliasCheck">
+      <Arg>
+        <New class="org.eclipse.jetty.server.handler.ContextHandler$ApproveSameSuffixAliases"/>
+      </Arg>
+    </Call>
+</Configure>
