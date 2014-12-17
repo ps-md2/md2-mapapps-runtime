@@ -80,6 +80,12 @@ define([
             var action = new GotoViewAction(viewName);
             action.$ = this._references;
             return action;
+        },
+        
+        getFireEventAction: function(workflowelement, event){
+            var action = new FireEventAction(workflowelement, event);
+            action.$ = this._references;
+            return action;
         }
         
     });
