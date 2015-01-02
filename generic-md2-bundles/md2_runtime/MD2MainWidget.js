@@ -73,9 +73,11 @@ define([
         },
         
         build: function() {
-            
             // ID of this app
-            var appId = this._dataFormBean.id;
+            var appId = this._dataFormBean.appId;
+            
+            // ID of this workflow element
+            var wfeId = this._dataFormBean.id;
             
             // injected notification service
             var notificationService = this._notificationService;
@@ -103,7 +105,7 @@ define([
             var dataMapper = new DataMapper();
             
             var widgetRegistry = new WidgetRegistry();
-            var viewManager = this._createDataForms(widgetRegistry, dataMapper, typeFactory, appId);
+            var viewManager = this._createDataForms(widgetRegistry, dataMapper, typeFactory, wfeId);
             this._viewManager = viewManager;
             
             var eventRegistry = new EventRegistry(appId);
@@ -114,7 +116,7 @@ define([
             var actionFactory = new ActionFactory(customActions, $);
             this._actionFactory = actionFactory;
             
-            this._window = this._createWindow(appId, viewManager);
+            this._window = this._createWindow(wfeId, viewManager);
                         
             lang.mixin($, {
                 dataMapper: dataMapper,
@@ -148,13 +150,13 @@ define([
             contentProviderRegistry.registerContentProvider(locationProvider);
         },
         
-        _createDataForms: function(widgetRegistry, dataMapper, typeFactory, appId) {
+        _createDataForms: function(widgetRegistry, dataMapper, typeFactory, wfeId) {
             
             // DataFormService and dataFormBean injected by the component runtime
             var dataFormService = this._dataFormService;
             var views = this._dataFormBean.views;
             
-            var viewManager = new ViewManager(widgetRegistry, dataFormService, dataMapper, typeFactory, this, appId);
+            var viewManager = new ViewManager(widgetRegistry, dataFormService, dataMapper, typeFactory, this, wfeId);
             
             array.forEach(views, function(view) {
                 viewManager.setupView(view.name, view.dataForm);
@@ -163,7 +165,7 @@ define([
             return viewManager;
         },
         
-        _createWindow: function(appId, viewManager) {
+        _createWindow: function(wfeId, viewManager) {
             
             var windowSize = {
                 w: "60%",
@@ -176,7 +178,7 @@ define([
                 marginBox: windowSize,
                 minimizeOnClose: true,
                 maximizable: true,
-                windowName: appId.concat("_window_root")
+                windowName: wfeId.concat("_window_root")
             };
             
             var window = this._windowManager.createWindow(windowProperites);
