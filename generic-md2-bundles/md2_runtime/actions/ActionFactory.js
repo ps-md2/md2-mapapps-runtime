@@ -4,6 +4,7 @@ define([
     "./simpleactions/ContentProviderOperationAction",
     "./simpleactions/ContentProviderResetAction",
     "./simpleactions/EnableAction",
+    "./simpleactions/FireEventAction",
     "./simpleactions/DisableAction",
     "./simpleactions/DisplayMessageAction",
     "./simpleactions/GotoViewAction"
@@ -13,6 +14,7 @@ define([
     ContentProviderOperationAction,
     ContentProviderResetAction,
     EnableAction,
+    FireEventAction,
     DisableAction,
     DisplayMessageAction,
     GotoViewAction

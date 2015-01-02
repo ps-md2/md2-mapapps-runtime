@@ -19,7 +19,7 @@ function(declare, _Action) {
         },
         
         execute: function() {
-            this.$.workflowEventHandler.handleEvent(_workflowelement, _event);	
+            this.$.workflowEventHandler.handleEvent(this._event, this._workflowelement);	
         }
         
     });
