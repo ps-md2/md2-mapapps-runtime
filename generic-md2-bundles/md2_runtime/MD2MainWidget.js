@@ -16,7 +16,8 @@ define([
     "./events/EventRegistry",
     "./actions/ActionFactory",
     "./validators/ValidatorFactory",
-    "./datatypes/TypeFactory"
+    "./datatypes/TypeFactory",
+    "./workflow/WorkflowStateHandler"
 ], function(
     declare,
     lang,
@@ -35,7 +36,8 @@ define([
     EventRegistry,
     ActionFactory,
     ValidatorFactory,
-    TypeFactory
+    TypeFactory,
+    WorkflowStateHandler            
 ) {
     
     return declare([_Widget, _TemplatedMixin, _WidgetsInTemplateMixin], {
@@ -43,7 +45,7 @@ define([
         templateString: templateStringContent,
         
         _isFirstExecution: true,
-        
+                
         constructor: function(injectedServices) {
             declare.safeMixin(this, injectedServices);
         },
@@ -52,7 +54,32 @@ define([
             var window = this._window;
             var actionFactory = this._actionFactory;
             if (window) {
+                var xyz = this._workflowStateHandler;
+                var id = this._dataFormBean.id;
+                var lastWindow = this._workflowEventHandler.getLastWindow(id);
+                if(lastWindow !== null) {
+                    
+                    var md2MainWidget = this._workflowEventHandler.getMD2MainWidget(lastWindow);
+                    var kjaslfda = this._workflowStateHandler.getMD2MainWidget(lastWindow);
+                    if(md2MainWidget !== null) {
+                        var md2Id = md2MainWidget._dataFormBean.id;
+                        var md2viewManager = md2MainWidget._viewManager;
+                        window = this._createWindow(md2Id, md2viewManager);
+                        
+                        window = this._foobar(md2MainWidget, md2Id, md2viewManager);
+                    }                    
+                    
+                    //var widgetRegistry = new WidgetRegistry();
+                    //var typeFactory = new TypeFactory(this._models);
+                    //var dataMapper = new DataMapper();
+                    //var viewManager = this._createDataForms(widgetRegistry, dataMapper, typeFactory, lastWindow);
+                    //window = this._createWindow(lastWindow, viewManager);
+                }
+                
                 window.show();
+                
+                
+                
                 
                 // execute onInitialized action
                 if (this._isFirstExecution) {
@@ -117,7 +144,12 @@ define([
             this._actionFactory = actionFactory;
             
             this._window = this._createWindow(wfeId, viewManager);
-                        
+            
+            this._workflowStateHandler = new WorkflowStateHandler();
+            this._workflowStateHandler.registerMD2MainWidget(wfeId, this);
+            
+            this._workflowEventHandler.registerMD2MainWidget(wfeId, this);
+            
             lang.mixin($, {
                 dataMapper: dataMapper,
                 eventRegistry: eventRegistry,
@@ -132,7 +164,6 @@ define([
                 create: typeFactory.create,
                 workflowEventHandler: workflowEventHandler
             });
-            
         },
         
         _createContentProviders: function(appId, contentProviderRegistry, typeFactory, $) {
@@ -185,6 +216,32 @@ define([
             
             // resize data form on window resizing
             topic.subscribe("md2/window/onResize", lang.hitch(this, function() {
+                viewManager.resizeView();
+            }));
+            
+            return window;
+        },
+        
+        _foobar: function(md2MainWidget, wfeId, viewManager) {
+            
+            var windowSize = {
+                w: "60%",
+                h: "60%"
+            };
+            
+            var windowProperites = {
+                content: md2MainWidget,
+                title: md2MainWidget._dataFormBean.windowTitle,
+                marginBox: windowSize,
+                minimizeOnClose: true,
+                maximizable: true,
+                windowName: wfeId.concat("_window_root")
+            };
+            
+            var window = md2MainWidget._windowManager.createWindow(windowProperites);
+            
+            // resize data form on window resizing
+            topic.subscribe("md2/window/onResize", lang.hitch(md2MainWidget, function() {
                 viewManager.resizeView();
             }));
             
