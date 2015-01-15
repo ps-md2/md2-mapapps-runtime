@@ -56,11 +56,18 @@ define([
             if (window) {
                 var id = this._dataFormBean.id;
                 var lastWindow = this._workflowStateHandler.getLastWindow(id);
+                // check if there is a last view specified.
+                // if there is one, then open this last view and not
+                // the current one of this active workflow element
                 if(lastWindow !== null) {
+                    // there is a last view specified -> get the md2MainWidget instance
+                    // of this workflow element, because it is needed to "openWindow" this view
                     var md2MainWidget = this._workflowStateHandler.getMD2MainWidget(lastWindow);
                     if(md2MainWidget !== null) {
-                        var md2Id = md2MainWidget._dataFormBean.id;
-                        var md2viewManager = md2MainWidget._viewManager;                        
+                        var md2Id = md2MainWidget._dataFormBean.id; // id of the last workflow element
+                        var md2viewManager = md2MainWidget._viewManager; // the view manager of the last workflow element
+                        // create the window which should be opended with the
+                        // md2MainWidget instance of the last workflow element
                         window = this._createWindow2(md2MainWidget, md2Id, md2viewManager);
                     }
                 }
