@@ -41,7 +41,8 @@
                     "w": 330,
                     "h": 180
                 },
-                "dockTool": "md2_list_of_open_issues"
+                "dockTool": "md2_list_of_open_issues",
+                "closable": false
             }
         }
     ]
