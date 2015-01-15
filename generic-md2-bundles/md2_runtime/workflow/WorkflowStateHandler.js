@@ -2,8 +2,16 @@ define([
     "dojo/_base/declare", "ct/Hash"
 ],
 function(declare, Hash) {
+    
+    // a mapping of workflow element id and 
+    // the last window that should be 
+    // opened when this workflow element is resumed
     var lastWindows = {};
     
+    // a mapping of all md2MainWidgets to the
+    // respetive workflow elements (WfE). For each
+    // WfE there is one md2MainWidget instance, that
+    // handles 'openWindow', etc...
     var md2MainWidgets = {};
     
     return declare([], {
