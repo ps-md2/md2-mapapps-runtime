@@ -1,0 +1,60 @@
+<html>
+    <head>
+        <title>OpenIssuesListWidget Test Page</title>
+        <script type="text/javascript">
+            var dojoConfig = {
+                parseOnLoad: true,
+                async: true,
+                isDebug: true,
+                baseUrl: "../../",
+                tlmSiblingOfDojo: false,
+                packages: [
+                    {name: "dojo", location: "http://localhost:8081/ct-mapapps-webapp-3.1.0/resources/jsregistry/root/dojo/1.9.1"},
+                    {name: "dijit", location: "http://localhost:8081/ct-mapapps-webapp-3.1.0/resources/jsregistry/root/dijit/1.9.1"},
+                    {name: "ct", location: "http://localhost:8081/ct-mapapps-webapp-3.1.0/resources/jsregistry/root/ct/3.1.0"},
+                    {name: "openIssueList", location: "md2_list_of_open_issues"}
+                ]
+            };
+        </script>
+        <script type="text/javascript" src="http://localhost:8081/ct-mapapps-webapp-3.1.0/resources/jsregistry/root/dojo/1.9.1/dojo.js"></script>
+        <script type="text/javascript">
+            require([
+                "dojo/ready", "ct/Stateful", "bundles/md2_list_of_open_issues/OpenIssuesListWidget"
+            ], function (ready, Stateful, OpenIssuesListWidget) {
+                var nodes = [
+                    new Stateful({
+                        id: 1,
+                        title: "Layer1",
+                        enabled: true
+                    }),
+                    new Stateful({
+                        id: 2,
+                        title: "Layer2",
+                        enabled: false
+                    }),
+                    new Stateful({
+                        id: 3,
+                        title: "Layer3",
+                        enabled: true
+                    })
+                ];
+                ready(function () {
+                    var openIssuesListWidget = new OpenIssuesListWidget({nodes: nodes}, "listwidget");
+                    //connect to custom event by dojo default means
+                    openIssuesListWidget.on("layerUpdated", function (event) {
+                        alert("Layer '" + event.node.title + "' clicked");
+                    });
+                    //simulate external cahnge two seconds after page load
+                    setTimeout(function () {
+                        nodes[0].set("enabled", false);
+                        nodes[1].set("enabled", true);
+                        nodes[2].set("enabled", false);
+                    }, 2000);
+                });
+            });
+        </script>
+    </head>
+    <body class="auskunfttheme">
+        <div id="listwidget"></div>
+    </body>
+</html>

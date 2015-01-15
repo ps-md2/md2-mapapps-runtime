@@ -1,0 +1,48 @@
+{
+    "Bundle-SymbolicName": "md2_list_of_open_issues",
+    "Bundle-Version": "2.0",
+    "Bundle-Name": "List of open issues",
+    "Bundle-Description": "Provides a tool, which displays open issues and allows to continue them.",
+    "Bundle-Localization": [],
+    "Bundle-Main": "",
+    "Require-Bundle": [],
+    "Require-Bundle": [],
+    "Components": [
+        {
+            "name": "OpenIssuesListController",
+            "provides": ["dijit.Widget", "md2.OpenIssuesListController"],
+            "properties" : {
+                "widgetRole" : "openIssuesListWidget"
+            },
+            "instanceFactory": true
+        },
+        {
+            "name": "MD2OpenIssueTool",
+            "impl": "ct/tools/Tool",
+            "provides": ["ct.tools.Tool"],
+            "propertiesConstructor": true,
+            "properties": {
+                "id": "md2_list_of_open_issues",
+                "title": "List of open issues",
+                "description": "Show open issues",
+                "tooltip": "Show open issues",
+                "toolRole": "toolset",
+                "iconClass": "icon-view-grid",
+                "togglable": true
+            }
+        }
+    ],
+    "layout-widgets": [
+        {
+            "role": "openIssuesListWidget",
+            "window": {
+                "title": "List of Open Issues",
+                "marginBox": {
+                    "w": 330,
+                    "h": 180
+                },
+                "dockTool": "md2_list_of_open_issues"
+            }
+        }
+    ]
+}
