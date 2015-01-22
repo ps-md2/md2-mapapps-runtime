@@ -5,8 +5,10 @@
     "Bundle-Description": "Provides a tool, which displays open issues and allows to continue them.",
     "Bundle-Localization": [],
     "Bundle-Main": "",
-    "Require-Bundle": [],
-    "Require-Bundle": [],
+    "Require-Bundle": [ {
+            "name": "md2_workflow_store"
+            }
+        ],
     "Components": [
         {
             "name": "OpenIssuesListController",
@@ -15,11 +17,13 @@
                 "widgetRole" : "openIssuesListWidget"
             },
             "instanceFactory": true,
-            "references" : {
-                "name": "dataView",
-                "providing": "md2.DataView",
-                "cardinality": "1..1"
-            }
+            "references" : [ 
+                {
+                    "name": "workflow_store",
+                    "providing": "md2.workflowstore"
+                }
+            ]
+            
         },
         {
             "name": "MD2OpenIssueTool",
@@ -32,7 +36,7 @@
                 "description": "Show open issues",
                 "tooltip": "Show open issues",
                 "toolRole": "toolset",
-                "iconClass": "icon-view-grid",
+                "iconClass": "icon-list-grid",
                 "togglable": true
             }
         }

@@ -1,0 +1,28 @@
+{
+    "Bundle-SymbolicName": "md2_workflow_store",
+    "Bundle-Version": "1.0",
+    "Bundle-Name": "MD2WorkflowStore",
+    "Bundle-Localization": [],
+    "Bundle-Main": "",
+    "Require-Bundle": [],
+    
+    "Components": [
+        {
+            "name": "MD2WorkflowStore",
+            "impl": "./MD2StoreFactory",
+            "provides": ["md2.workflowstore"],
+            "propertiesConstructor": true,
+            "properties": {
+                "uri": "http://localhost:8080/ReferenceProject.backend/service/", /** to be set in app.json  */
+                "app": "dummyApp" /** to be set in app.json */
+            },
+            "references": [
+                {
+                    "name": "_remoteFactory",
+                    "providing": "md2.store.RemoteStore",
+                    "cardinality": "0..1"
+                }
+            ]
+        }
+    ]
+}

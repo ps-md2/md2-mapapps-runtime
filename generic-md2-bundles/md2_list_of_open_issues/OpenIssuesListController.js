@@ -13,10 +13,10 @@ define(["dojo/_base/declare",
                         title: "Title",
                         dataView: {
                             DGRID: {
-                                noDataMessage: "No custom info(s) found..."
+                                noDataMessage: "No incoming workflows found."
                             },
                             pager: {
-                                pageSizeLabelText: "Custom info ${pageStartItemNumber}-${pageEndItemNumber} of ${itemCount}"
+                                pageSizeLabelText: "${pageStartItemNumber}-${pageEndItemNumber} of ${itemCount}"
                             }
                         }
                     }
