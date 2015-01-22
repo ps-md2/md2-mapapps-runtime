@@ -36,8 +36,7 @@ define([
     EventRegistry,
     ActionFactory,
     ValidatorFactory,
-    TypeFactory,
-    WorkflowStateHandler            
+    TypeFactory            
 ) {
     
     return declare([_Widget, _TemplatedMixin, _WidgetsInTemplateMixin], {
@@ -45,12 +44,88 @@ define([
         templateString: templateStringContent,
         
         _isFirstExecution: true,
+        
+        _startedWorkflowInstanceId: null,
                 
         constructor: function(injectedServices) {
             declare.safeMixin(this, injectedServices);
         },
         
+        startWorkflow: function()  {
+            // staring the workflow...
+            // first, check if the workflow has already been started
+            // in case it has been started, the variable '_startedWorkflowInstanceId'
+            // is already set, otherwise it is null...
+            if(this._startedWorkflowInstanceId === null) {
+                // workflow instance started for first time...
+                // generate and save a new workflow instance ID...
+                this._startedWorkflowInstanceId = this.generateUUID();
+                // simply open this window now...
+                this.openWindow();
+            } else {
+                // this workflow has been started in the past
+                
+                // only check for a resume workflow instance, if the global active instance id is the one from this workflow...
+                var resumeWfE = null;
+                if(this._startedWorkflowInstanceId === this._workflowStateHandler.getCurrentActiveWorkflowInstance()) {
+                    var resumeWfE = this._workflowStateHandler.getResumeWorkflowElement(this._startedWorkflowInstanceId);
+                }
+                
+                // get the workflow element to which to resume to (if any..)
+                // check where to resume the workflow instance state..
+                if(resumeWfE === null) {
+                    // there is no last workflow element to resume to,
+                    // thus simply open the window of this workflow element again...
+                    this.openWindow();
+                } else {
+                    // there is a workflow element to resume to
+                    // open the view of that workflow element,
+                    // instead of the view of _this_ workflow element
+                    // we need the MD2MainWidget instance of the other workflow element...
+                    var md2MainWidgetInstanceOfResumeWfE = this._workflowStateHandler.getMD2MainWidget(resumeWfE);
+                    this.openWindowWithMD2Instance(md2MainWidgetInstanceOfResumeWfE);
+                }
+            }
+        },
+        
         openWindow: function() {
+            
+            this.openWindowWithMD2Instance(this);
+            
+            /*
+            var window = this._window;
+            var actionFactory = this._actionFactory;
+            if (window) {
+                window.show();
+                
+                // execute onInitialized action
+                if (this._isFirstExecution) {
+                    this._isFirstExecution = false;
+                    actionFactory.getCustomAction(this._dataFormBean.onInitialized).execute();
+                } else {
+                    this._viewManager.restoreLastView();
+                }
+            } */
+        },
+        
+        openWindowWithMD2Instance: function(otherMd2Instance) {
+            this._workflowStateHandler.setCurrentActiveWorkflowInstance(this._startedWorkflowInstanceId);
+            var window = otherMd2Instance._window;
+            var actionFactory = otherMd2Instance._actionFactory;
+            if (window) {
+                window.show();
+                
+                // execute onInitialized action
+                if (otherMd2Instance._isFirstExecution) {
+                    otherMd2Instance._isFirstExecution = false;
+                    actionFactory.getCustomAction(otherMd2Instance._dataFormBean.onInitialized).execute();
+                } else {
+                    otherMd2Instance._viewManager.restoreLastView();
+                }
+            }
+        },
+        
+        openWindowALT: function() {
             var window = this._window;
             var actionFactory = this._actionFactory;
             if (window) {
@@ -236,7 +311,16 @@ define([
             }));
             
             return window;
-        }
+        },
         
+        generateUUID: function( ){
+            var d = new Date().getTime();
+            var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                var r = (d + Math.random()*16)%16 | 0;
+                d = Math.floor(d/16);
+                return (c=='x' ? r : (r&0x3|0x8)).toString(16);
+            });
+            return uuid;
+        }        
     });
 });

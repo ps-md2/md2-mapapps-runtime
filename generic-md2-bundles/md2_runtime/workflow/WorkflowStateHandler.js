@@ -3,46 +3,49 @@ define([
 ],
 function(declare, Hash) {
     
-    // a mapping of workflow element id and 
-    // the last window that should be 
-    // opened when this workflow element is resumed
-    var lastWindows = {};
-    
-    // a mapping of all md2MainWidgets to the
-    // respetive workflow elements (WfE). For each
-    // WfE there is one md2MainWidget instance, that
-    // handles 'openWindow', etc...
-    var md2MainWidgets = {};
-    
     return declare([], {
-        createInstance: function() {  
+
+        createInstance: function() {
             return {
               instance: this,
-              getLastWindow: this.getLastWindow,
-              setLastWindow: this.setLastWindow,
+              _resumeWorkflowInstance: new Hash(),
+              _md2MainWidgets: new Hash(),
+              _currentActiveWorkflowInstanceId: null, // the global active instance id of the currently started workflow...
+              getResumeWorkflowElement: this.getResumeWorkflowElement,
+              setResumeWorkflowElement: this.setResumeWorkflowElement,
               registerMD2MainWidget: this.registerMD2MainWidget,
-              getMD2MainWidget: this.getMD2MainWidget
+              getMD2MainWidget: this.getMD2MainWidget,
+              getCurrentActiveWorkflowInstance: this.getCurrentActiveWorkflowInstance,
+              setCurrentActiveWorkflowInstance: this.setCurrentActiveWorkflowInstance
             };
         },
         
-        setLastWindow: function(wfeId, lastWindowId) {
-            lastWindows[wfeId] = lastWindowId;
+        getCurrentActiveWorkflowInstance: function() {
+            return this._currentActiveWorkflowInstanceId;
         },
         
-        getLastWindow: function(id) {
-            var window = lastWindows[id];
-            if(!window) {
+        setCurrentActiveWorkflowInstance: function(newActiveWorkflowInstanceId) {
+            this._currentActiveWorkflowInstanceId = newActiveWorkflowInstanceId;
+        },
+        
+        getResumeWorkflowElement: function(workflowElementId) {
+            var resumeWorkflowElement = this._resumeWorkflowInstance.get(workflowElementId);
+            if(!resumeWorkflowElement) {
                 return null;
             }
-            return window;
+            return resumeWorkflowElement;
         },
         
-        registerMD2MainWidget: function(id, md2MainWidget) {
-            md2MainWidgets[id] = md2MainWidget;
+        setResumeWorkflowElement: function(instanceId, workflowElementId) {
+            this._resumeWorkflowInstance.set(instanceId, workflowElementId);
         },
         
-        getMD2MainWidget: function(id) {
-            var md2MainWidget = md2MainWidgets[id];
+        registerMD2MainWidget: function(workflowElementId, md2MainWidget) {
+            this._md2MainWidgets.set(workflowElementId, md2MainWidget);
+        },
+        
+        getMD2MainWidget: function(workflowElementId) {
+            var md2MainWidget = this._md2MainWidgets.get(workflowElementId);
             if(!md2MainWidget) {
                 return null;
             }
