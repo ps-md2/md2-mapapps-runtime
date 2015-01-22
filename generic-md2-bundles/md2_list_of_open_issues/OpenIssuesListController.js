@@ -14,18 +14,21 @@ define(["dojo/_base/declare", "dojo/_base/array","./OpenIssuesListWidget" , "ct/
                     nodes: [
                     new Stateful({
                         id: 1,
-                        title: "Layer1",
-                        enabled: true
+                        workflowElement: "MediaCapturing",
+                        lastEventFired: "LocationDetectedEvent",
+                        waitingSince: "2015-01-14"
                     }),
                     new Stateful({
                         id: 2,
-                        title: "Layer2",
-                        enabled: false
+                        workflowElement: "LocationDetection",
+                        lastEventFired: "ComplaintSubmitEvent",
+                        waitingSince: "2015-01-12"
                     }),
                     new Stateful({
                         id: 3,
-                        title: "Layer3",
-                        enabled: true
+                        workflowElement: "MediaCapturing",
+                        lastEventFired: "LocationDetectedEvent",
+                        waitingSince: "2015-01-13"
                     })
                     ]
                     });

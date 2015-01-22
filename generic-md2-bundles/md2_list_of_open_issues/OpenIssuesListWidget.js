@@ -15,15 +15,28 @@ function(declare, domConstruct, _WidgetBase, d_array, domStyle) {
             this._createList();
         },
         _createList: function(){
-            var tableElement = domConstruct.create("table", {}, this.domNode);
-            d_array.forEach(this.nodes, function(node){
-                var title = node.get("title") || node.get("id");
-                var trElement = domConstruct.create("tr", {}, tableElement);
-                var tdElement = domConstruct.create("td", {innerHTML: "<b>" + 
-                            title+ "</b>"}, trElement );
-                domStyle.set(tdElement, "color", node.get("enabled") ? 
-                    "green": "black");
-        }, this);
-    }
+                var tableElement = domConstruct.create("table", {}, this.domNode);
+                var trHead = domConstruct.create("tr", {}, tableElement);
+                    var tdWorkflowElementHead = domConstruct.create("td", {innerHTML: "<b>" + 
+                                "Workflow Element"+ "</b>"}, trHead );
+                    var tdLastEventFiredHead = domConstruct.create("td", {innerHTML: "<b>" + 
+                                "Last Event Fired"+ "</b>"}, trHead );
+                    var tdWaitingSinceHead = domConstruct.create("td", {innerHTML: "<b>" + 
+                                "Waiting Since"+ "</b>"}, trHead );
+                d_array.forEach(this.nodes, function(node){
+                    var workflowElement = node.get("workflowElement") || node.get("id");
+                    var lastEventFired = node.get("lastEventFired");
+                    var waitingSince = node.get("waitingSince");
+                    var trElement = domConstruct.create("tr", {}, tableElement);
+                    var tdWorkflowElement = domConstruct.create("td", {innerHTML: "<b>" + 
+                                workflowElement+ "</b>"}, trElement );
+                    var tdLastEventFired = domConstruct.create("td", {innerHTML: "<b>" + 
+                                lastEventFired+ "</b>"}, trElement );
+                    var tdWaitingSince = domConstruct.create("td", {innerHTML: "<b>" + 
+                                waitingSince+ "</b>"}, trElement );
+                //    domStyle.set(tdElement, "color", node.get("enabled") ? 
+                //       "green": "black");
+            }, this);
+        }
     });
 });
