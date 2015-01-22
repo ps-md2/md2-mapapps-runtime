@@ -14,7 +14,12 @@
             "properties" : {
                 "widgetRole" : "openIssuesListWidget"
             },
-            "instanceFactory": true
+            "instanceFactory": true,
+            "references" : {
+                "name": "dataView",
+                "providing": "md2.DataView",
+                "cardinality": "1..1"
+            }
         },
         {
             "name": "MD2OpenIssueTool",
@@ -30,6 +35,40 @@
                 "iconClass": "icon-view-grid",
                 "togglable": true
             }
+        /*},
+        {
+        "name": "DataView",
+        "impl": "ct/ui/controls/dataview/DataView",
+        "provides": ["dijit.Widget","md2.DataView"],
+        "propertiesConstructor": true,
+        "properties": {
+            "_i18nPath": "ui.dataView",
+            // Anchor name to use in a template
+            "widgetRole": "resultCenter",
+            "showFilter": true,
+            "filterDuringKeyUp": true,
+            "showPager": true,
+            "showViewButtons": true,
+            "itemsPerPage": 10,
+            "domainAware": true,
+            "DGRID": {
+                "checkboxSelection": true, // indicates whether a CheckboxSelector is used or not
+                "columns": [{
+                    // any field matching no rule above is used as is
+                    "matches": {
+                        "name": {
+                            "$exists": true
+                        }
+                    }
+                }]
+            }
+        }*/
+        //,
+        //"references": [{
+//            "name": "toolbar",
+//            "providing": "resultcenter.DataViewToolbar",
+//            "cardinality": "0..1"
+//        }]
         }
     ],
     "layout-widgets": [
