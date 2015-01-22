@@ -11,18 +11,7 @@
             "name": "MD2WorkflowStore",
             "impl": "./MD2StoreFactory",
             "provides": ["md2.workflowstore"],
-            "propertiesConstructor": true,
-            "properties": {
-                "uri": "http://localhost:8080/ReferenceProject.backend/service/", /** to be set in app.json  */
-                "app": "dummyApp" /** to be set in app.json */
-            },
-            "references": [
-                {
-                    "name": "_remoteFactory",
-                    "providing": "md2.store.RemoteStore",
-                    "cardinality": "0..1"
-                }
-            ]
+            "propertiesConstructor": true
         }
     ]
 }

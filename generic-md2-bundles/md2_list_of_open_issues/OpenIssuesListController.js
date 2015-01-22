@@ -28,6 +28,7 @@ define(["dojo/_base/declare",
                     this._listeners = new _Connect();
                 },
                 createInstance: function () {
+                    this.workflow_store.create();
                     return this.build_dataView();
                 },
                 destroyInstance: function (widget) {

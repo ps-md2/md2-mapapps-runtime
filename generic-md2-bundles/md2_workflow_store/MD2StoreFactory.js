@@ -28,16 +28,17 @@ define([
          *        entity that is handled by the created store.
          * @returns {MD2WorkflowStore}
          */
-        create: function(serviceUri, entityFactory) {
-            
-            if (!serviceUri || !entityFactory) {
-                throw new Error("[MD2StoreFactory] The properties 'serviceUri' or 'entityFactory' are missing "
+        create: function() {
+            var serviceUri = this._properties.uri;
+            var appId = this._properties.app;
+            if (!serviceUri || !appId) {
+                throw new Error("[MD2StoreFactory] The properties 'uri' or 'app' are missing "
                         + "in the configuration object of method #create!");
             }
             
             var options = {
-                url: this._formatUri(serviceUri, entityFactory.datatype),
-                entityFactory: entityFactory
+                url: serviceUri,
+                app: appId
             };
             
             // Look-up store in hash
