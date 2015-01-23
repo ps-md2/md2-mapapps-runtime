@@ -338,23 +338,23 @@ define([
                             fields : [{
                                 "title": "__internalId",
                                 "name": "__internalId",
-                                //"type": "number",
-                                //"identifier" : true
+                                "type": "integer",
+                                "identifier" : false
                             },{
                                 "title": "instanceId",
                                 "name": "instanceId",
-                                //"type": "number",
-                                //"identifier" : true
+                                "type": "integer",
+                                "identifier" : true
                             },{
                                 "title": "currentWorkflowElement",
                                 "name": "currentWorkflowElement",
-                                //"type": "string",
-                                //"identifier" : true
+                                "type": "string",
+                                "identifier" : false
                             },{
                                 "title": "lastEventFired",
                                 "name": "lastEventFired",
-                                //"type": "string",
-                                //"identifier" : true
+                                "type": "string",
+                                "identifier" : false
                             }]
                         };
                     }

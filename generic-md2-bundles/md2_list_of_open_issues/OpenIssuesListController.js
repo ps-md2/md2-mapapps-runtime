@@ -36,59 +36,10 @@ define(["dojo/_base/declare",
                     widget.destroyRecursive();
                 },
                 build_dataView: function(){
-                    var store = new ComplexMemory({
-                        idProperty: "id",
-                        data: [
-                        new Stateful({
-                            id: 1,
-                            workflowElement: "MediaCapturing",
-                            lastEventFired: "LocationDetectedEvent",
-                            waitingSince: "2015-01-14"
-                        }),
-                        new Stateful({
-                            id: 2,
-                            workflowElement: "LocationDetection",
-                            lastEventFired: "ComplaintSubmitEvent",
-                            waitingSince: "2015-01-12"
-                        }),
-                        new Stateful({
-                            id: 3,
-                            workflowElement: "MediaCapturing",
-                            lastEventFired: "LocationDetectedEvent",
-                            waitingSince: "2015-01-13"
-                        })
-                        ]
-                    });
-                    store.getMetadata = function(){
-                        return {
-                            displayField : "name",
-                            fields : [{
-                                "title": "ID",
-                                "name": "id",
-                                "type": "string",
-                                "identifier" : true
-                            },{
-                                "title": "workflowElement",
-                                "name": "workflowElement",
-                                "type": "string",
-                                "identifier" : true
-                            },{
-                                "title": "lastEventFired",
-                                "name": "lastEventFired",
-                                "type": "string",
-                                "identifier" : true
-                            },{
-                                "title": "waitingSince",
-                                "name": "waitingSince",
-                                "type": "date",
-                                "identifier" : true
-                            }]
-                        };
-                    };
                     var model = this._viewModel = new DataViewModel({
                         store: this.workflow_store
                     });
-                   
+
                     var dataView = this._dataView = this._createDataView();
                     //this._gridNode.set("content", dataView);
                     dataView.startup();
@@ -112,12 +63,13 @@ define(["dojo/_base/declare",
                             noDataMessage: i18n.noDataFound,
                             checkboxSelection: false,
                             columns: [//can filter the columns to be shown
-                                /*{
+                                {
                                     "matches": {
-                                      "name": "id"
+                                      "name": "instanceId"
                                     },
-                                      "title": "ID"
-                                },*/
+                                      "title": "ID",
+                                      "width": 50
+                                },
                                 {
                                     "matches": {
                                       "name": "currentWorkflowElement"
