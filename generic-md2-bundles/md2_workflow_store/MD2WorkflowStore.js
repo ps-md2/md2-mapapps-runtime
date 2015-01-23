@@ -8,10 +8,11 @@ define([
     "ct/store/StoreUtil",
     "dojo/store/util/QueryResults",
     "dojo/json",
-    "dojo/request/xhr"
-], function(declare, lang, array, ct_lang, ct_when, ct_request, StoreUtil, QueryResults, json, xhr) {
+    "dojo/request/xhr", 
+    "dojo/store/Memory"
+], function(declare, lang, array, ct_lang, ct_when, ct_request, StoreUtil, QueryResults, json, xhr, Memory) {
     
-    return declare([], {
+    return declare([Memory], {
         
         /** 
          * Defines the Accept header to use on HTTP requests
@@ -28,7 +29,7 @@ define([
          * URL of the web service
          */
         url: null,
-        
+
         /**
          * On every request:
          * Check header of the response on whether it equals the required model version defined in the store.
@@ -79,7 +80,6 @@ define([
             if (options && options.count) {
                 parameters.limit = options.count;
             }*/
-            
             var promise = ct_when(ct_request({
                 url: url + "all/",
                 content: parameters
