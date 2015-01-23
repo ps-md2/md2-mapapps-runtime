@@ -49,6 +49,7 @@ define([
         entityFactory: undefined,
         
         constructor: function(options) {
+            this.idProperty="instanceId";
             declare.safeMixin(this, options);
             
             if (!this.url) {
