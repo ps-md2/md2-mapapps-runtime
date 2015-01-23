@@ -19,7 +19,7 @@
             "instanceFactory": true,
             "references" : [ 
                 {
-                    "name": "workflow_store",
+                    "name": "workflow_store_factory",
                     "providing": "md2.workflowstore"
                 }
             ]

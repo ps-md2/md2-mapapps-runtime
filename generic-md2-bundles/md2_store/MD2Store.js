@@ -75,7 +75,7 @@ define([
             }
             
             var promise = ct_when(ct_request({
-                url: url,
+                url: url + "all/",
                 content: parameters
             }), function(response) {
                 var result = lang.isArray(response) ? response : [response];

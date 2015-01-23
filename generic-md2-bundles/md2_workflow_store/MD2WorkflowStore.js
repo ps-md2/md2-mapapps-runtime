@@ -66,7 +66,7 @@ define([
             
             var url = this.url;
             var parameters = {
-                app : this.app
+                //app : this.app
             };
             
             /*if (query) {
@@ -81,7 +81,7 @@ define([
             }*/
             
             var promise = ct_when(ct_request({
-                url: url,
+                url: url + "all/",
                 content: parameters
             }), function(response) {
                 var result = response; // (assume response is always an array with >= 0 elements. (Was: lang.isArray(response) ? response : [response];)
@@ -331,7 +331,33 @@ define([
                 }
             }, this);
             return platformEntity;
-        }
+        },
+        getMetadata : function(){
+                        return {
+                            displayField : "name",
+                            fields : [{
+                                "title": "__internalId",
+                                "name": "__internalId",
+                                //"type": "number",
+                                //"identifier" : true
+                            },{
+                                "title": "instanceId",
+                                "name": "instanceId",
+                                //"type": "number",
+                                //"identifier" : true
+                            },{
+                                "title": "currentWorkflowElement",
+                                "name": "currentWorkflowElement",
+                                //"type": "string",
+                                //"identifier" : true
+                            },{
+                                "title": "lastEventFired",
+                                "name": "lastEventFired",
+                                //"type": "string",
+                                //"identifier" : true
+                            }]
+                        };
+                    }
         
     });
 });

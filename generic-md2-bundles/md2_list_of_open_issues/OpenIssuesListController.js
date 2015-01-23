@@ -28,7 +28,7 @@ define(["dojo/_base/declare",
                     this._listeners = new _Connect();
                 },
                 createInstance: function () {
-                    this.workflow_store.create();
+                    this.workflow_store = this.workflow_store_factory.create();
                     return this.build_dataView();
                 },
                 destroyInstance: function (widget) {
@@ -86,12 +86,13 @@ define(["dojo/_base/declare",
                         };
                     };
                     var model = this._viewModel = new DataViewModel({
-                        store: store
+                        store: this.workflow_store
                     });
+                   
                     var dataView = this._dataView = this._createDataView();
                     //this._gridNode.set("content", dataView);
                     dataView.startup();
-                    dataView.set("model", model);
+                    dataView.setModel(model);
                     this._listeners.connect(dataView, "onItemClicked", this, function (evt) {
                         //this.editCustomInfo(evt.itemId);
                         alert("You clicked on " +  evt.itemId);
@@ -119,7 +120,7 @@ define(["dojo/_base/declare",
                                 },*/
                                 {
                                     "matches": {
-                                      "name": "workflowElement"
+                                      "name": "currentWorkflowElement"
                                     },
                                       "title": "Workflow Element"
                                 },
@@ -129,13 +130,13 @@ define(["dojo/_base/declare",
                                     },
                                       "title": "Last Event Fired"
                                 },
-                                {
+                                /*{
                                     "matches": {
                                       "name": "waitingSince"
                                     },
                                       "title": "Waiting Since"
                                 }
-                                /*,{ //Maybe use this for generic column filtering
+                                ,{ //Maybe use this for generic column filtering
                                     matches: {
                                         name: {
                                             $eq: "id"
