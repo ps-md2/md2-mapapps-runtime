@@ -87,6 +87,12 @@
             "name": "ContentProviderBindingResolver",
             "impl": "./datamapper/ContentProviderBindingResolver",
             "provides": ["dataform.BindingResolver"]
+        },
+        {
+            "name": "WorkflowStateHandler",
+            "impl": "./workflow/WorkflowStateHandler",
+            "provides": ["md2.workflow.WorkflowStateHandler"],
+            "instanceFactory": true
         }
     ]
 }
