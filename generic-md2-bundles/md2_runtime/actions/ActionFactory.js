@@ -4,6 +4,7 @@ define([
     "./simpleactions/ContentProviderOperationAction",
     "./simpleactions/ContentProviderResetAction",
     "./simpleactions/EnableAction",
+    "./simpleactions/FireEventAction",
     "./simpleactions/DisableAction",
     "./simpleactions/DisplayMessageAction",
     "./simpleactions/GotoViewAction"
@@ -13,6 +14,7 @@ define([
     ContentProviderOperationAction,
     ContentProviderResetAction,
     EnableAction,
+    FireEventAction,
     DisableAction,
     DisplayMessageAction,
     GotoViewAction
@@ -78,6 +80,12 @@ define([
         
         getGotoViewAction: function(viewName) {
             var action = new GotoViewAction(viewName);
+            action.$ = this._references;
+            return action;
+        },
+        
+        getFireEventAction: function(workflowelement, event){
+            var action = new FireEventAction(workflowelement, event);
             action.$ = this._references;
             return action;
         }
