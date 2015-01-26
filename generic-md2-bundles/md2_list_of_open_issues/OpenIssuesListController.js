@@ -1,12 +1,11 @@
 define(["dojo/_base/declare", 
     "dojo/_base/array",
-    "./OpenIssuesListWidget" ,
     "ct/_Connect",
     "ct/Stateful",
     "ct/ui/controls/dataview/DataViewModel",
     "ct/ui/controls/dataview/DataView",
     "ct/store/ComplexMemory"],
-        function (declare, array, OpenIssuesListWidget, _Connect, Stateful, DataViewModel, DataView, ComplexMemory) {
+        function (declare, array, _Connect, Stateful, DataViewModel, DataView, ComplexMemory) {
             return declare([_Connect], {
                 i18n: {
                     grid: {
