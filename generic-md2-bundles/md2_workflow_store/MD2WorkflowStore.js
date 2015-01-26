@@ -68,7 +68,7 @@ define([
             
             var url = this.url;
             var parameters = {
-                //app : this.app
+                app : this.app
             };
             
             /*if (query) {
@@ -82,7 +82,7 @@ define([
                 parameters.limit = options.count;
             }*/
             var promise = ct_when(ct_request({
-                url: url + "all/",
+                url: url + "filteredOpenIssues/",
                 content: parameters
             }), function(response) {
                 var result = response; // (assume response is always an array with >= 0 elements. (Was: lang.isArray(response) ? response : [response];)
