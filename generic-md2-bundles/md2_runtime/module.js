@@ -1,5 +1,6 @@
 define([
     "./MD2MainWidget",
     "./handler/RuntimeEventHandler",
-    "./datamapper/ContentProviderBindingResolver"
+    "./datamapper/ContentProviderBindingResolver",
+    "./workflow/WorkflowStateHandler"
 ], {});

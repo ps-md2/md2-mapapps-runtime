@@ -5,9 +5,13 @@
     "Bundle-Description": "Provides a tool, which displays open issues and allows to continue them.",
     "Bundle-Localization": [],
     "Bundle-Main": "",
-    "Require-Bundle": [ {
+    "Require-Bundle": [ 
+        {
+            "name": "md2_runtime"
+        },
+        {            
             "name": "md2_workflow_store"
-            }
+        }
         ],
     "Components": [
         {
@@ -21,6 +25,10 @@
                 {
                     "name": "workflow_store_factory",
                     "providing": "md2.workflowstore"
+                },
+                {
+                    "name": "_workflowStateHandler",
+                    "providing": "md2.workflow.WorkflowStateHandler"
                 }
             ]
             

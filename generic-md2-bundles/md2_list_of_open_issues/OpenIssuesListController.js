@@ -44,8 +44,11 @@ define(["dojo/_base/declare",
                     dataView.startup();
                     dataView.setModel(model);
                     this._listeners.connect(dataView, "onItemClicked", this, function (evt) {
-                        //this.editCustomInfo(evt.itemId);
+                        var that = this;
                         this.workflow_store.get(evt.itemId).then(function(result){
+                            var mainWidget = that._workflowStateHandler.getMD2MainWidget("md2.wfe."+result.currentWorkflowElement+".controller");
+                            mainWidget._startedWorkflowInstanceId = result.instanceId;
+                            mainWidget.startWorkflow();
                             alert("Request returned with:"+ result.currentWorkflowElement);
                         });
                         alert("You clicked on " +  evt.itemId);
