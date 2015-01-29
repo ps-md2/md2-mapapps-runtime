@@ -45,6 +45,7 @@ define(["dojo/_base/declare",
                     dataView.setModel(model);
                     this._listeners.connect(dataView, "onItemClicked", this, function (evt) {
                         //this.editCustomInfo(evt.itemId);
+                        var test = this.workflow_store.get(evt.itemId);
                         alert("You clicked on " +  evt.itemId);
                     });
                     return dataView;

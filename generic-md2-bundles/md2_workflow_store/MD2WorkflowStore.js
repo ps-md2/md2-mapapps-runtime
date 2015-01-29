@@ -103,10 +103,16 @@ define([
         },
         
         get: function(id) {
-            return ct_when(this.query({id: id}, {count: 1}), lang.hitch(this, function(result) {
-                //result = this._translateToMD2Types(result);
-                return result.length ? result[0] : null;
-            }));
+            
+            var url = this.url;
+            
+            var promise = ct_when(ct_request({
+                url: url + id
+            }), function(result) {
+                return result;
+            }, this);
+            
+            return QueryResults(promise);
         },
         
         put: function(object, options) {
