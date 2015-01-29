@@ -16,8 +16,7 @@ define([
     "./events/EventRegistry",
     "./actions/ActionFactory",
     "./validators/ValidatorFactory",
-    "./datatypes/TypeFactory",
-    "./workflow/WorkflowStateHandler"
+    "./datatypes/TypeFactory"
 ], function(
     declare,
     lang,
