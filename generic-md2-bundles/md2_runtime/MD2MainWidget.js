@@ -199,7 +199,7 @@ define([
             var dataMapper = new DataMapper();
             
             var widgetRegistry = new WidgetRegistry();
-            var viewManager = this._createDataForms(widgetRegistry, dataMapper, typeFactory, wfeId);
+            var viewManager = this._createDataForms(widgetRegistry, dataMapper, typeFactory, appId);
             this._viewManager = viewManager;
             
             var eventRegistry = new EventRegistry(appId);
@@ -245,13 +245,13 @@ define([
             contentProviderRegistry.registerContentProvider(locationProvider);
         },
         
-        _createDataForms: function(widgetRegistry, dataMapper, typeFactory, wfeId) {
+        _createDataForms: function(widgetRegistry, dataMapper, typeFactory, appId) {
             
             // DataFormService and dataFormBean injected by the component runtime
             var dataFormService = this._dataFormService;
             var views = this._dataFormBean.views;
             
-            var viewManager = new ViewManager(widgetRegistry, dataFormService, dataMapper, typeFactory, this, wfeId);
+            var viewManager = new ViewManager(widgetRegistry, dataFormService, dataMapper, typeFactory, this, appId);
             
             array.forEach(views, function(view) {
                 viewManager.setupView(view.name, view.dataForm);
