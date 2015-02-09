@@ -76,6 +76,12 @@ function(declare, lang, array, string, topic, _Type, Hash) {
         _topicOnChange: "md2/contentProvider/onChange/${appId}",
         
         /**
+         * By use of this transactionID it is guaranteed, that all contentProviderActions are finished 
+         * before the next workflow element is started.
+         */
+        _transactionID: null,
+        
+        /**
          * Debug messages
          */
         _DEBUG_MSG: {
@@ -97,10 +103,11 @@ function(declare, lang, array, string, topic, _Type, Hash) {
          * @param {boolean} isManyProvider
          * @param {Object} filter
          */
-        constructor: function(name, appId, store, isManyProvider, filter) {
+        constructor: function(name, appId, store, isManyProvider, filter, transactionID) {
             !name && window.console && window.console.error(this._DEBUG_MSG["nameParamErr"]);
             !store && window.console && window.console.error(this._DEBUG_MSG["storeParamErr"]);
             this._name = name;
+            this._transactionID = transactionID;
             
             this._topicAction = string.substitute(this._topicAction, {appId: appId});
             this._topicOnChange = string.substitute(this._topicOnChange, {appId: appId});
