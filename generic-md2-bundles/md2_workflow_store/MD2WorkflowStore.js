@@ -28,7 +28,8 @@ define([
         /**
          * URL of the web service
          */
-        url: null,
+        url_workflowState: null,
+        url_eventHandler: null,
 
         /**
          * On every request:
@@ -52,8 +53,12 @@ define([
             this.idProperty="instanceId";
             declare.safeMixin(this, options);
             
-            if (!this.url) {
-                throw new Error("[MD2WorkflowStore] Required property 'url' in options is not set!");
+            if (!this.url_eventHandler) {
+                throw new Error("[MD2WorkflowStore] Required property 'url_eventHandler' in options is not set!");
+            }
+            
+            if (!this.url_workflowState) {
+                throw new Error("[MD2WorkflowStore] Required property 'url_workflowState' in options is not set!");
             }
             
             if (!this.app) {
@@ -61,12 +66,13 @@ define([
             }
             
             // ensure trailing slash
-            this.url = this.url.replace(/\/+$/, "") + "/";
+            this.url_workflowState = this.url_workflowState.replace(/\/+$/, "") + "/";
+            this.url_eventHandler = this.url_eventHandler.replace(/\/+$/, "") + "/";
         },
         
         query: function(query, options) {
             
-            var url = this.url;
+            var url = this.url_workflowState;
             var parameters = {
                 app : this.app
             };
@@ -104,7 +110,7 @@ define([
         
         get: function(id) {
             
-            var url = this.url;
+            var url = this.url_workflowState;
             
             var promise = ct_when(ct_request({
                 url: url + id
