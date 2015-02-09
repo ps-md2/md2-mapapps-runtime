@@ -45,6 +45,8 @@ define([
         _isFirstExecution: true,
         
         _startedWorkflowInstanceId: null,
+        
+        _transactionId: null,
                 
         constructor: function(injectedServices) {
             declare.safeMixin(this, injectedServices);

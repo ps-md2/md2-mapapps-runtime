@@ -57,6 +57,7 @@ function(declare, Hash, WorkflowStateTransaction) {
         startNewTransaction: function(){
             this._currentTransactionCounter = this._currentTransactionCounter + 1;
             this._workflowStateTransactions[this._currentTransactionCounter] = new WorkflowStateTransaction(this._currentTransactionCounter);
+            return this._currentTransactionCounter;
         },
         
         // Save and retrieve workflow instances

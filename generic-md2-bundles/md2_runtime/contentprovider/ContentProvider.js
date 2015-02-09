@@ -92,6 +92,11 @@ function(declare, lang, array, string, topic, _Type, Hash) {
         _transactionId: null,
         
         /**
+         * Specifies if the store of this contentprovider is of type remote
+         */
+        _isRemote: null,
+        
+        /**
          * Debug messages
          */
         _DEBUG_MSG: {
@@ -113,11 +118,12 @@ function(declare, lang, array, string, topic, _Type, Hash) {
          * @param {boolean} isManyProvider
          * @param {Object} filter
          */
-        constructor: function(name, appId, store, isManyProvider, filter, transactionId) {
+        constructor: function(name, appId, store, isManyProvider, filter, isRemote, transactionId) {
             !name && window.console && window.console.error(this._DEBUG_MSG["nameParamErr"]);
             !store && window.console && window.console.error(this._DEBUG_MSG["storeParamErr"]);
             this._name = name;
             this._transactionId = transactionId;
+            this._isRemote = isRemote;
             
             this._topicAction = string.substitute(this._topicAction, {appId: appId});
             this._topicOnChange = string.substitute(this._topicOnChange, {appId: appId});
@@ -375,6 +381,10 @@ function(declare, lang, array, string, topic, _Type, Hash) {
         
         getName: function() {
             return this._name;
+        },
+        
+        isRemote: function() {
+            return this._isRemote;
         }
         
     });
