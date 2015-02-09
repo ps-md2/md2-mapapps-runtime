@@ -94,9 +94,22 @@
             "provides": ["md2.workflow.WorkflowStateHandler"],
             "instanceFactory": true,
             "references":[
-                    {
+                {
                     "name": "workflow_store_factory",
                     "providing": "md2.workflowstore"
+                },
+                {
+                    "name": "_contentProviders",
+                    "providing": "md2.ContentProvider",
+                    "cardinality": "0..n"
+                },
+                {
+                    "name": "_models",
+                    "providing": "md2.Models"
+                },
+                {
+                    "name": "_locationFactory",
+                    "providing": "md2.store.LocationStore"
                 }
             ]
         }

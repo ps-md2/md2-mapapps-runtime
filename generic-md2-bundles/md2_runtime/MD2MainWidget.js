@@ -178,11 +178,11 @@ define([
             // injected notification service
             var notificationService = this._notificationService;
             
-            // injected custom actions
-            var customActions = this._customActions;
-            
             // injected entities and enums
             var modelFactories = this._models;
+            
+            // injected custom actions
+            var customActions = this._customActions;
             
             // injected workflow event handler
             var workflowEventHandler = this._workflowEventHandler;
@@ -198,11 +198,9 @@ define([
             // available after the build!! It is meant to be used during runtime
             // to easily access all components.
             var $ = {};
+            lang.mixin($, this._workflowStateHandler.$);
             
             var typeFactory = new TypeFactory(modelFactories);
-            
-            var contentProviderRegistry = new ContentProviderRegistry();
-            this._createContentProviders(appId, contentProviderRegistry, typeFactory, $);
             
             var dataMapper = new DataMapper();
             
@@ -223,7 +221,6 @@ define([
             lang.mixin($, {
                 dataMapper: dataMapper,
                 eventRegistry: eventRegistry,
-                contentProviderRegistry: contentProviderRegistry,
                 viewManager: viewManager,
                 widgetRegistry: widgetRegistry,
                 dataEventHandler: dataEventHandler,
@@ -234,21 +231,6 @@ define([
                 create: typeFactory.create,
                 workflowEventHandler: workflowEventHandler
             });
-        },
-        
-        _createContentProviders: function(appId, contentProviderRegistry, typeFactory, $) {
-            // custom content providers
-            var contentProviderFactories = this._contentProviders;
-            array.forEach(contentProviderFactories, function(contentProviderFactory) {
-                var contentProvider = contentProviderFactory.create(typeFactory, this._transactionId);
-                contentProviderRegistry.registerContentProvider(contentProvider);
-            }, this);
-            
-            // instantiate location content provider
-            var locationProviderFactory = new LocationProviderFactory();
-            var locationStoreFactory = this._locationFactory;
-            var locationProvider = locationProviderFactory.create(appId, locationStoreFactory, typeFactory);
-            contentProviderRegistry.registerContentProvider(locationProvider);
         },
         
         _createDataForms: function(widgetRegistry, dataMapper, typeFactory, appId) {

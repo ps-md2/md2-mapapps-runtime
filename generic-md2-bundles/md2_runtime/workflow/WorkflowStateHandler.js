@@ -11,8 +11,10 @@ function(declare, Hash, WorkflowStateTransaction) {
         _currentActiveWorkflowInstanceId:null,
         _workflowStateTransactions:null,
         _currentTransactionCounter: null,
+        $:null,
 
-        constructor: function(store) {
+        constructor: function(store, $) {
+            this.$ = $;
             this._workflowStore = store;
             this._resumeWorkflowInstance = new Hash();
             this._md2MainWidgets = new Hash();
@@ -84,5 +86,7 @@ function(declare, Hash, WorkflowStateTransaction) {
             var transaction = this._workflowStateTransactions[transactionId];
             return transaction;
         }
+        
+        
     });
 });
