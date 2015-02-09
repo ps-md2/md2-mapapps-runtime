@@ -29,15 +29,17 @@ define([
          * @returns {MD2WorkflowStore}
          */
         create: function() {
-            var serviceUri = this._properties.uri;
+            var url_eventHandler = this._properties.url_eventHandler;
+            var url_workflowState = this._properties.url_workflowState;
             var appId = this._properties.app;
-            if (!serviceUri || !appId) {
-                throw new Error("[MD2StoreFactory] The properties 'uri' or 'app' are missing "
+            if (!url_eventHandler || !url_workflowState || !appId) {
+                throw new Error("[MD2StoreFactory] The properties 'url_eventHandler', 'url_workflowState', or 'app' are missing "
                         + "in the configuration object of method #create!");
             }
             
             var options = {
-                url: serviceUri,
+                url_eventHandler: url_eventHandler,
+                url_workflowState: url_workflowState,
                 app: appId
             };
             
