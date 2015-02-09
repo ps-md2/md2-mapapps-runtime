@@ -53,12 +53,8 @@ define([
             this.idProperty="instanceId";
             declare.safeMixin(this, options);
             
-            if (!this.url_eventHandler) {
-                throw new Error("[MD2WorkflowStore] Required property 'url_eventHandler' in options is not set!");
-            }
-            
-            if (!this.url_workflowState) {
-                throw new Error("[MD2WorkflowStore] Required property 'url_workflowState' in options is not set!");
+            if (!this.url) {
+                throw new Error("[MD2WorkflowStore] Required property 'url' in options is not set!");
             }
             
             if (!this.app) {
@@ -66,8 +62,9 @@ define([
             }
             
             // ensure trailing slash
-            this.url_workflowState = this.url_workflowState.replace(/\/+$/, "") + "/";
-            this.url_eventHandler = this.url_eventHandler.replace(/\/+$/, "") + "/";
+            this.url = this.url.replace(/\/+$/, "") + "/";
+            this.url_workflowState = this.url + "workflowState/";
+            this.url_eventHandler = this.url + "eventHandler/";
         },
         
         query: function(query, options) {
@@ -152,6 +149,27 @@ define([
                     id: ids
                 }
             });*/
+        },
+        
+        fireEventToBackend: function(parameters){
+                        
+            if (!parameters.instanceId) {
+                throw new Error("[MD2WorkflowStore] Required property 'instanceId' in parameters is not set!");
+            }
+            
+            if (!parameters.lastEventFired) {
+                throw new Error("[MD2WorkflowStore] Required property 'lastEventFired' in parameters is not set!");
+            }
+            
+            if (!parameters.currentWfe) {
+                throw new Error("[MD2WorkflowStore] Required property 'currentWfe' in parameters is not set!");
+            }
+            var requestArgs = {
+                        url: this.url_eventHandler,
+                        content: parameters,
+                        handleAs: "json"
+                    };
+            ct_request(requestArgs,{usePost:true});
         },
         
         /**

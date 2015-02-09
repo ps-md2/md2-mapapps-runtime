@@ -8,7 +8,6 @@ function(declare, topic, lang, array, ct_request) {
         _id:null,
         _runningOperations: null,
         _fireEventData: null,
-        _url: null,
         _workflowStore: null,
         constructor: function(id, store) {
             this._id=id;
@@ -44,12 +43,8 @@ function(declare, topic, lang, array, ct_request) {
                         lastEventFired: fireEventData["event"],
                         currentWfe: fireEventData["workflowElement"]
                     };
-                    var requestArgs = {
-                        url: this._url,
-                        content: parameters,
-                        handleAs: "json"
-                    };
-                    ct_request(requestArgs,{usePost:true});
+                    
+                    this._workflowStore.fireEventToBackend(parameters);
                 }, this);
                 this._fireEventData = [];
             }
