@@ -89,10 +89,16 @@
             "provides": ["dataform.BindingResolver"]
         },
         {
-            "name": "WorkflowStateHandler",
-            "impl": "./workflow/WorkflowStateHandler",
+            "name": "WorkflowStateHandlerFactory",
+            "impl": "./workflow/WorkflowStateHandlerFactory",
             "provides": ["md2.workflow.WorkflowStateHandler"],
-            "instanceFactory": true
+            "instanceFactory": true,
+            "references":[
+                    {
+                    "name": "workflow_store_factory",
+                    "providing": "md2.workflowstore"
+                }
+            ]
         }
     ]
 }
