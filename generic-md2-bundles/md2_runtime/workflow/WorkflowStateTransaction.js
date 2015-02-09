@@ -9,16 +9,20 @@ function(declare, topic, lang, array, ct_request) {
         _runningOperations: null,
         _fireEventData: null,
         _workflowStore: null,
+        _internalIds: null,
         constructor: function(id, store) {
             this._id=id;
             this._fireEventData = [];
+            this._internalIds = {};
             this._runningOperations = 0;
             this._workflowStore = store;
             topic.subscribe("md2/contentProvider/startOperation/"+id, lang.hitch(this, function(){
                 this._runningOperations+=1;
             }));
-            topic.subscribe("md2/contentProvider/finishOperation/"+id, lang.hitch(this, function(){
+            topic.subscribe("md2/contentProvider/finishOperation/"+id, lang.hitch(this, function(contentProvider, internalIds){
                 this._runningOperations-=1;
+                var contentProviderIds = {};
+                this._internalIds[contentProvider] = internalIds;
                 this._checkAndFireEventToBackend();
             }));
         },

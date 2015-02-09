@@ -42,7 +42,7 @@ function(declare, lang, Hash, WorkflowStateHandler, array, ContentProviderRegist
             // custom content providers
             var contentProviderFactories = this._contentProviders;
             array.forEach(contentProviderFactories, function(contentProviderFactory) {
-                var contentProvider = contentProviderFactory.create(typeFactory, this._transactionId);
+                var contentProvider = contentProviderFactory.create(typeFactory);
                 contentProviderRegistry.registerContentProvider(contentProvider);
             }, this);
             

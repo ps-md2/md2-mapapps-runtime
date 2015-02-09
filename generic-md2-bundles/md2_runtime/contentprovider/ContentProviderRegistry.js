@@ -25,6 +25,10 @@ function(declare) {
         
         hasContentProvider: function(contentProviderName) {
             return this._contentProviders.hasOwnProperty(contentProviderName);
+        },
+        
+        getContentProviders: function(){
+            return this._contentProviders;
         }
         
     });

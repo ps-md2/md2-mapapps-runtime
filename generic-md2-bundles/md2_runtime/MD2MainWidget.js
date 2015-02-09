@@ -217,7 +217,9 @@ define([
             this._actionFactory = actionFactory;
             
             this._window = this._createWindow(wfeId, viewManager);
-                       
+            
+            this.$ = $;
+            
             lang.mixin($, {
                 dataMapper: dataMapper,
                 eventRegistry: eventRegistry,
@@ -231,6 +233,14 @@ define([
                 create: typeFactory.create,
                 workflowEventHandler: workflowEventHandler
             });
+            this._resetContentProvider();
+        },
+        
+        _resetContentProvider: function(){
+            var contentProviders = this.$.contentProviderRegistry.getContentProviders();
+            for (var contentProvider in contentProviders){
+                 contentProviders[contentProvider].setTransactionId(this._transactionId);
+            };
         },
         
         _createDataForms: function(widgetRegistry, dataMapper, typeFactory, appId) {

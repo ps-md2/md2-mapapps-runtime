@@ -118,19 +118,14 @@ function(declare, lang, array, string, topic, _Type, Hash) {
          * @param {boolean} isManyProvider
          * @param {Object} filter
          */
-        constructor: function(name, appId, store, isManyProvider, filter, isRemote, transactionId) {
+        constructor: function(name, appId, store, isManyProvider, filter, isRemote) {
             !name && window.console && window.console.error(this._DEBUG_MSG["nameParamErr"]);
             !store && window.console && window.console.error(this._DEBUG_MSG["storeParamErr"]);
             this._name = name;
-            this._transactionId = transactionId;
             this._isRemote = isRemote;
             
             this._topicAction = string.substitute(this._topicAction, {appId: appId});
             this._topicOnChange = string.substitute(this._topicOnChange, {appId: appId});
-            if (transactionId){
-                this._topicOnStartOperation = string.substitute(this._topicOnStartOperation, {transactionId: transactionId});
-                this._topicOnFinishOperation = string.substitute(this._topicOnFinishOperation, {transactionId: transactionId});
-            }
             
             this._store = store;
             this._content = [];
@@ -138,6 +133,14 @@ function(declare, lang, array, string, topic, _Type, Hash) {
             this._filter = filter;
             this._isManyProvider = isManyProvider || false;
             this.reset();
+        },
+        
+        setTransactionId: function(transactionId){
+            this._transactionId = transactionId; 
+            if (transactionId){
+                this._topicOnStartOperation = string.substitute(this._topicOnStartOperation, {transactionId: transactionId});
+                this._topicOnFinishOperation = string.substitute(this._topicOnFinishOperation, {transactionId: transactionId});
+            }
         },
         
         getContent: function() {
@@ -341,12 +344,19 @@ function(declare, lang, array, string, topic, _Type, Hash) {
             
             this._store.put(this._content).then(lang.hitch(this, function(response) {
                 
+                var internalIds = [];
                 // mixin internalIds from backend
                 for(var i = 0; i < response.length; i++) {
                     this._content[i].setInternalID(response[i].__internalId);
+                    if (response[i].__internalId){
+                       internalIds.push(response[i].__internalId)
+                    }
                 }
-                
-                topic.publish(this._topicOnFinishOperation);
+                if (this.isRemote()){
+                    topic.publish(this._topicOnFinishOperation, this.getName(), internalIds);
+                }else{
+                    topic.publish(this._topicOnFinishOperation);
+                }
                 topic.publish(this._topicAction, "success", name, "save");
             }), lang.hitch(this, function(error) {
                 topic.publish(this._topicOnFinishOperation);
