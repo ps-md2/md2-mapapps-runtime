@@ -189,6 +189,8 @@ define([
             
             this._workflowStateHandler.registerMD2MainWidget(wfeId, this);
             
+            workflowEventHandler.workflowStateHandler = this._workflowStateHandler;
+            
             this._transactionId = this._workflowStateHandler.startNewTransaction();
             
             // Object of references to be passed to actions/contentProviders etc.
@@ -324,6 +326,10 @@ define([
                 return (c=='x' ? r : (r&0x3|0x8)).toString(16);
             });
             return uuid;
-        }        
+        },
+        
+        getTransactionId: function(){
+            return this._transactionId;
+        }
     });
 });

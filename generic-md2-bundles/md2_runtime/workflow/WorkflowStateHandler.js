@@ -5,18 +5,17 @@ function(declare, Hash, WorkflowStateTransaction) {
     
     return declare([], {
         
-        worflowStore:null,
-        instance:null,
+        _workflowStore:null,
         _resumeWorkflowInstance:null,
         _md2MainWidgets:null,
         _currentActiveWorkflowInstanceId:null,
         _workflowStateTransactions:null,
         _currentTransactionCounter: null,
+
         constructor: function(store) {
-            this.workflowStore = store;
-            this.instance= this;
-            this._resumeWorkflowInstance= new Hash();
-            this._md2MainWidgets= new Hash();
+            this._workflowStore = store;
+            this._resumeWorkflowInstance = new Hash();
+            this._md2MainWidgets = new Hash();
             this._currentActiveWorkflowInstanceId= null;
             this._workflowStateTransactions = {};
             this._currentTransactionCounter = 0;
@@ -56,7 +55,7 @@ function(declare, Hash, WorkflowStateTransaction) {
         
         startNewTransaction: function(){
             this._currentTransactionCounter = this._currentTransactionCounter + 1;
-            this._workflowStateTransactions[this._currentTransactionCounter] = new WorkflowStateTransaction(this._currentTransactionCounter);
+            this._workflowStateTransactions[this._currentTransactionCounter] = new WorkflowStateTransaction(this._currentTransactionCounter, this._workflowStore);
             return this._currentTransactionCounter;
         },
         
@@ -72,10 +71,10 @@ function(declare, Hash, WorkflowStateTransaction) {
             nextController.openWindow();
         },
             
-        fireEventToBackend: function(event, workflowElement, currentMainWidget, currentControllerId, transactionId){
+        fireEventToBackend: function(event, workflowElement, currentController, transactionId){
             var transaction = this._getTransaction(transactionId);
             if (transaction){
-                transaction.fireEventToBackend(event, workflowElement, currentMainWidget, currentControllerId);
+                transaction.fireEventToBackend(event, workflowElement, currentController);
             }else{
                 Error("Transaction could not be retrieved");
             }
