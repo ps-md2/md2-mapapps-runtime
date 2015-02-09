@@ -187,6 +187,10 @@ define([
             // injected workflow event handler
             var workflowEventHandler = this._workflowEventHandler;
             
+            this._workflowStateHandler.registerMD2MainWidget(wfeId, this);
+            
+            this._transactionId = this._workflowStateHandler.startNewTransaction();
+            
             // Object of references to be passed to actions/contentProviders etc.
             // Will be populated after all components are built. Thus, $ is only
             // available after the build!! It is meant to be used during runtime
@@ -213,8 +217,6 @@ define([
             this._actionFactory = actionFactory;
             
             this._window = this._createWindow(wfeId, viewManager);
-            
-            this._workflowStateHandler.registerMD2MainWidget(wfeId, this);
                        
             lang.mixin($, {
                 dataMapper: dataMapper,
@@ -236,9 +238,9 @@ define([
             // custom content providers
             var contentProviderFactories = this._contentProviders;
             array.forEach(contentProviderFactories, function(contentProviderFactory) {
-                var contentProvider = contentProviderFactory.create(typeFactory, $);
+                var contentProvider = contentProviderFactory.create(typeFactory, this._transactionId);
                 contentProviderRegistry.registerContentProvider(contentProvider);
-            });
+            }, this);
             
             // instantiate location content provider
             var locationProviderFactory = new LocationProviderFactory();

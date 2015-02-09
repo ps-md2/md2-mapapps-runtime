@@ -10,11 +10,13 @@ function(declare, topic, lang) {
         constructor: function(id) {
             this._id=id;
             this._runningOperations = 0;
-            topic.subscribe("md2/contentprovider/startOperation/"+id, lang.hitch(this, function(){
+            topic.subscribe("md2/contentProvider/startOperation/"+id, lang.hitch(this, function(){
+                alert("It works!")
                 this._runningOperations+=1;
             }));
-            topic.subscribe("md2/contentprovider/finishOperation/"+id, lang.hitch(this, function(){
+            topic.subscribe("md2/contentProvider/finishOperation/"+id, lang.hitch(this, function(){
                 this._runningOperations-=1;
+                 alert("It works even more!")
             }));
         }
     });

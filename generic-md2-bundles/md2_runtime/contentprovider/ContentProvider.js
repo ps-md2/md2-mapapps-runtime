@@ -127,8 +127,10 @@ function(declare, lang, array, string, topic, _Type, Hash) {
             
             this._topicAction = string.substitute(this._topicAction, {appId: appId});
             this._topicOnChange = string.substitute(this._topicOnChange, {appId: appId});
-            this._topicOnStartOperation = string.substitute(this._topicOnStartOperation, {transactionID: transactionId});
-            this._topicOnFinishOperation = string.substitute(this._topicOnFinishOperation, {transactionID: transactionId});
+            if (transactionId){
+                this._topicOnStartOperation = string.substitute(this._topicOnStartOperation, {transactionId: transactionId});
+                this._topicOnFinishOperation = string.substitute(this._topicOnFinishOperation, {transactionId: transactionId});
+            }
             
             this._store = store;
             this._content = [];
@@ -335,7 +337,7 @@ function(declare, lang, array, string, topic, _Type, Hash) {
         
         save: function() {
             var name = this._name;
-            topic.publish(this._topicOnStartOperation);
+            topic.publish(this._topicOnStartOperation, "my String");
             
             this._store.put(this._content).then(lang.hitch(this, function(response) {
                 
