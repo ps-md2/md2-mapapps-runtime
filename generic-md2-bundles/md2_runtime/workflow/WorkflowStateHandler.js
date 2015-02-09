@@ -72,22 +72,18 @@ function(declare, Hash, WorkflowStateTransaction) {
             nextController.openWindow();
         },
             
-        fireEventToBackend: function(event, workflowElement, currentMainWidget, currentControllerId){
-            var currentController = this.instance.controllers.get(currentControllerId);
-            currentController.closeWindow();
-            currentController._isFirstExecution = true;
-            var parameters = {
-                instanceId: currentController._startedWorkflowInstanceId,
-                lastEventFired: event,
-                currentWfe: workflowElement,
-                currentContentProviders: this.instance.workflowStateHandler.getContentProvidersForMD2MainWidget(currentMainWidget)
-            };
-            var requestArgs = {
-                url: this.url,
-                content: parameters,
-                handleAs: "json"
-            };
-            return ct_request(requestArgs,{usePost:true});
+        fireEventToBackend: function(event, workflowElement, currentMainWidget, currentControllerId, transactionId){
+            var transaction = this._getTransaction(transactionId);
+            if (transaction){
+                transaction.fireEventToBackend(event, workflowElement, currentMainWidget, currentControllerId);
+            }else{
+                Error("Transaction could not be retrieved");
+            }
+        },
+        
+        _getTransaction: function(transactionId){
+            var transaction = this._workflowStateTransactions[transactionId];
+            return transaction;
         }
     });
 });
