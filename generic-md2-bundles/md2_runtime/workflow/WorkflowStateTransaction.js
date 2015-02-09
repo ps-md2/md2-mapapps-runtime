@@ -10,7 +10,7 @@ function(declare, topic, lang) {
         constructor: function(id) {
             this._id=id;
             this._runningOperations = 0;
-            topic.subscribe("md2/contentprovider/addOperation/"+id, lang.hitch(this, function(){
+            topic.subscribe("md2/contentprovider/startOperation/"+id, lang.hitch(this, function(){
                 this._runningOperations+=1;
             }));
             topic.subscribe("md2/contentprovider/finishOperation/"+id, lang.hitch(this, function(){

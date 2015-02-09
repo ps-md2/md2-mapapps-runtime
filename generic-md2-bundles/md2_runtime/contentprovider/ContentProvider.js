@@ -76,10 +76,20 @@ function(declare, lang, array, string, topic, _Type, Hash) {
         _topicOnChange: "md2/contentProvider/onChange/${appId}",
         
         /**
-         * By use of this transactionID it is guaranteed, that all contentProviderActions are finished 
+         * Identifier of the topic ths content provider publishes to notify the start of a store operation
+         */
+        _topicOnStartOperation: "md2/contentProvider/startOperation/${transactionId}",
+        
+        /**
+         * Identifier of the topic ths content provider publishes to notify the finish of a store operation
+         */
+        _topicOnFinishOperation: "md2/contentProvider/finishOperation/${transactionId}",
+        
+        /**
+         * By use of this transactionId it is guaranteed, that all contentProviderActions are finished 
          * before the next workflow element is started.
          */
-        _transactionID: null,
+        _transactionId: null,
         
         /**
          * Debug messages
@@ -103,14 +113,16 @@ function(declare, lang, array, string, topic, _Type, Hash) {
          * @param {boolean} isManyProvider
          * @param {Object} filter
          */
-        constructor: function(name, appId, store, isManyProvider, filter, transactionID) {
+        constructor: function(name, appId, store, isManyProvider, filter, transactionId) {
             !name && window.console && window.console.error(this._DEBUG_MSG["nameParamErr"]);
             !store && window.console && window.console.error(this._DEBUG_MSG["storeParamErr"]);
             this._name = name;
-            this._transactionID = transactionID;
+            this._transactionId = transactionId;
             
             this._topicAction = string.substitute(this._topicAction, {appId: appId});
             this._topicOnChange = string.substitute(this._topicOnChange, {appId: appId});
+            this._topicOnStartOperation = string.substitute(this._topicOnStartOperation, {transactionID: transactionId});
+            this._topicOnFinishOperation = string.substitute(this._topicOnFinishOperation, {transactionID: transactionId});
             
             this._store = store;
             this._content = [];
@@ -317,6 +329,7 @@ function(declare, lang, array, string, topic, _Type, Hash) {
         
         save: function() {
             var name = this._name;
+            topic.publish(this._topicOnStartOperation);
             
             this._store.put(this._content).then(lang.hitch(this, function(response) {
                 
@@ -325,8 +338,10 @@ function(declare, lang, array, string, topic, _Type, Hash) {
                     this._content[i].setInternalID(response[i].__internalId);
                 }
                 
+                topic.publish(this._topicOnFinishOperation);
                 topic.publish(this._topicAction, "success", name, "save");
             }), lang.hitch(this, function(error) {
+                topic.publish(this._topicOnFinishOperation);
                 topic.publish(this._topicAction, "error", name, "save", error);
             }));
         },
@@ -347,9 +362,12 @@ function(declare, lang, array, string, topic, _Type, Hash) {
                     return entity.getInternalID();
                 }, this);
                 
+                topic.publish(this._topicOnStartOperation);
                 this._store.remove(ids).then(function() {
+                    topic.publish(this._topicOnFinishOperation);
                     topic.publish(this._topicAction, "success", this._name, "remove");
                 }, function(error) {
+                    topic.publish(this._topicOnFinishOperation);
                     topic.publish(this._topicAction, "error", this._name, "remove", error);
                 });
             }
