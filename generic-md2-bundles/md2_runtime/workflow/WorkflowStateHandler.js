@@ -1,7 +1,7 @@
 define([
-    "dojo/_base/declare", "ct/Hash", "./WorkflowStateTransaction"
+    "dojo/_base/declare", "dojo/_base/array", "ct/Hash", "./WorkflowStateTransaction"
 ],
-function(declare, Hash, WorkflowStateTransaction) {
+function(declare, array, Hash, WorkflowStateTransaction) {
     
     return declare([], {
         
@@ -57,7 +57,7 @@ function(declare, Hash, WorkflowStateTransaction) {
         
         startNewTransaction: function(){
             this._currentTransactionCounter = this._currentTransactionCounter + 1;
-            this._workflowStateTransactions[this._currentTransactionCounter] = new WorkflowStateTransaction(this._currentTransactionCounter, this._workflowStore);
+            this._workflowStateTransactions[this._currentTransactionCounter] = new WorkflowStateTransaction(this._currentTransactionCounter, this._workflowStore, this);
             return this._currentTransactionCounter;
         },
         
@@ -85,8 +85,27 @@ function(declare, Hash, WorkflowStateTransaction) {
         _getTransaction: function(transactionId){
             var transaction = this._workflowStateTransactions[transactionId];
             return transaction;
+        },
+        
+        _getContentProviderIds: function(){
+            var contentProviders = this.$.contentProviderRegistry.getContentProviders();
+            var result = {};
+            for (var key in contentProviders){
+                result[key] = [];
+                var content = contentProviders[key].getContent();
+                if (!contentProviders[key]._isManyProvider){
+                    if (content.hasInternalID()){
+                        result[key].push(content.getInternalID());
+                    }
+                }else{
+                    array.forEach(content, function(entry){
+                        if (entry.hasInternalID()){
+                            result[key].push(entry.getInternalID());
+                        }
+                    });
+                }
+            }
+            return result;
         }
-        
-        
     });
 });

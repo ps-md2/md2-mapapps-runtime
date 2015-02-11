@@ -348,12 +348,9 @@ function(declare, lang, array, string, topic, _Type, Hash) {
                 // mixin internalIds from backend
                 for(var i = 0; i < response.length; i++) {
                     this._content[i].setInternalID(response[i].__internalId);
-                    if (response[i].__internalId){
-                       internalIds.push(response[i].__internalId)
-                    }
                 }
                 if (this.isRemote()){
-                    topic.publish(this._topicOnFinishOperation, this.getName(), internalIds);
+                    topic.publish(this._topicOnFinishOperation);
                 }else{
                     topic.publish(this._topicOnFinishOperation);
                 }

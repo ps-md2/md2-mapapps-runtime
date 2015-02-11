@@ -151,7 +151,7 @@ define([
             });*/
         },
         
-        fireEventToBackend: function(parameters){
+        fireEventToBackend: function(parameters, contentProviderIds){
                         
             if (!parameters.instanceId) {
                 throw new Error("[MD2WorkflowStore] Required property 'instanceId' in parameters is not set!");

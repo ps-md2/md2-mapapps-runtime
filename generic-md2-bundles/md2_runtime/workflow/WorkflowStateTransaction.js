@@ -1,7 +1,7 @@
 define([
-    "dojo/_base/declare", "dojo/topic", "dojo/_base/lang", "dojo/_base/array", "ct/request"
+    "dojo/_base/declare", "dojo/topic", "dojo/_base/lang", "dojo/_base/array", "dojo/json",
 ],
-function(declare, topic, lang, array, ct_request) {
+function(declare, topic, lang, array, json) {
     
     return declare([], {
         
@@ -9,20 +9,18 @@ function(declare, topic, lang, array, ct_request) {
         _runningOperations: null,
         _fireEventData: null,
         _workflowStore: null,
-        _internalIds: null,
-        constructor: function(id, store) {
+        _workflowStateHandler: null,
+        constructor: function(id, store, workflowStateHandler) {
             this._id=id;
             this._fireEventData = [];
-            this._internalIds = {};
             this._runningOperations = 0;
             this._workflowStore = store;
+            this._workflowStateHandler = workflowStateHandler;
             topic.subscribe("md2/contentProvider/startOperation/"+id, lang.hitch(this, function(){
                 this._runningOperations+=1;
             }));
-            topic.subscribe("md2/contentProvider/finishOperation/"+id, lang.hitch(this, function(contentProvider, internalIds){
+            topic.subscribe("md2/contentProvider/finishOperation/"+id, lang.hitch(this, function(){
                 this._runningOperations-=1;
-                var contentProviderIds = {};
-                this._internalIds[contentProvider] = internalIds;
                 this._checkAndFireEventToBackend();
             }));
         },
@@ -45,10 +43,13 @@ function(declare, topic, lang, array, ct_request) {
                     var parameters = {
                         instanceId: currentController._startedWorkflowInstanceId,
                         lastEventFired: fireEventData["event"],
-                        currentWfe: fireEventData["workflowElement"]
+                        currentWfe: fireEventData["workflowElement"],
+                        contentProviderIds: json.stringify(
+                            this._workflowStateHandler._getContentProviderIds()
+                        )
                     };
                     
-                    this._workflowStore.fireEventToBackend(parameters);
+                    this._workflowStore.fireEventToBackend(parameters, this._workflowStateHandler._getContentProviderIds());
                 }, this);
                 this._fireEventData = [];
             }
