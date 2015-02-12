@@ -52,7 +52,10 @@ define([
             declare.safeMixin(this, injectedServices);
         },
         
-        startWorkflow: function()  {
+        startWorkflow: function(contentProviderIds)  {
+            // start a new transaction
+            this._transactionId = this._workflowStateHandler.startNewTransaction();
+            
             // staring the workflow...
             // first, check if the workflow has already been started
             // in case it has been started, the variable '_startedWorkflowInstanceId'
@@ -65,6 +68,11 @@ define([
                 this.openWindow();
             } else {
                 // this workflow has been started in the past
+                
+                // restore contentProviders
+                if (contentProviderIds){
+                    this._workflowStateHandler.resetContentProviders(this._transactionId, contentProviderIds);
+                }
                 
                 // only check for a resume workflow instance, if the global active instance id is the one from this workflow...
                 var resumeWfE = null;
@@ -200,12 +208,10 @@ define([
             var $ = {};
             lang.mixin($, this._workflowStateHandler.$);
             
-            var typeFactory = new TypeFactory(modelFactories);
-            
             var dataMapper = new DataMapper();
             
             var widgetRegistry = new WidgetRegistry();
-            var viewManager = this._createDataForms(widgetRegistry, dataMapper, typeFactory, appId);
+            var viewManager = this._createDataForms(widgetRegistry, dataMapper, $.typeFactory, appId);
             this._viewManager = viewManager;
             
             var eventRegistry = new EventRegistry(appId);
@@ -229,8 +235,6 @@ define([
                 notificationService: notificationService,
                 validatorFactory: validatorFactory,
                 actionFactory: actionFactory,
-                typeFactory: typeFactory,
-                create: typeFactory.create,
                 workflowEventHandler: workflowEventHandler
             });
             this._resetContentProvider();
