@@ -357,6 +357,8 @@ function(declare, lang, array, string, topic, _Type, Hash) {
         
         save: function() {
             var name = this._name;
+            //To ensure the correct finish topic even if transactionId changes
+            var topicOnFinish = this._topicOnFinishOperation;
             topic.publish(this._topicOnStartOperation);
             
             this._store.put(this._content).then(lang.hitch(this, function(response) {
@@ -367,9 +369,9 @@ function(declare, lang, array, string, topic, _Type, Hash) {
                     this._content[i].setInternalID(response[i].__internalId);
                 }
                 if (this.isRemote()){
-                    topic.publish(this._topicOnFinishOperation);
+                    topic.publish(topicOnFinish);
                 }else{
-                    topic.publish(this._topicOnFinishOperation);
+                    topic.publish(topicOnFinish);
                 }
                 topic.publish(this._topicAction, "success", name, "save");
             }), lang.hitch(this, function(error) {

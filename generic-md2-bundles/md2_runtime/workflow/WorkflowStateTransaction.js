@@ -25,11 +25,11 @@ function(declare, topic, lang, array, json) {
             }));
         },
         
-        fireEventToBackend: function(event, workflowElement, currentController){
+        fireEventToBackend: function(event, workflowElement, startedWorkflowInstanceId){
             var fireEventData = {};
             fireEventData["event"] = event;
             fireEventData["workflowElement"] = workflowElement;
-            fireEventData["currentController"] = currentController;
+            fireEventData["startedWorkflowInstanceId"] = startedWorkflowInstanceId;
             this._fireEventData.push(fireEventData);
             this._checkAndFireEventToBackend();
         },
@@ -37,11 +37,8 @@ function(declare, topic, lang, array, json) {
         _checkAndFireEventToBackend: function(){
             if (this._runningOperations===0){
                 array.forEach(this._fireEventData, function(fireEventData){
-                    var currentController = fireEventData["currentController"];
-                    currentController.closeWindow();
-                    currentController._isFirstExecution = true;
                     var parameters = {
-                        instanceId: currentController._startedWorkflowInstanceId,
+                        instanceId: fireEventData["startedWorkflowInstanceId"],
                         lastEventFired: fireEventData["event"],
                         currentWfe: fireEventData["workflowElement"],
                         contentProviderIds: json.stringify(

@@ -58,7 +58,7 @@ define([
         
         startWorkflow: function(contentProviderIds)  {
             // start a new transaction
-            this._transactionId = this._workflowStateHandler.startNewTransaction();
+            this.startNewTransaction();
             
             // restore contentProviders
             this._workflowStateHandler.resetContentProviders(this._transactionId, contentProviderIds);
@@ -97,6 +97,10 @@ define([
                     this.openWindowWithMD2Instance(md2MainWidgetInstanceOfResumeWfE);
                 }
             }
+        },
+        
+        startNewTransaction: function(){
+             this._transactionId = this._workflowStateHandler.startNewTransaction();
         },
         
         openWindow: function() {
@@ -144,6 +148,12 @@ define([
             }
         },
         
+        finish: function() {
+            this._isFirstExecution = true;
+            this._startedWorkflowInstanceId = null;
+            this.closeWindow();
+        },
+        
         build: function() {
             // ID of this app
             var appId = this._dataFormBean.appId;
@@ -166,9 +176,7 @@ define([
             this._workflowStateHandler.registerMD2MainWidget(wfeId, this);
             
             workflowEventHandler.workflowStateHandler = this._workflowStateHandler;
-            
-            this._transactionId = this._workflowStateHandler.startNewTransaction();
-            
+                  
             // Object of references to be passed to actions/contentProviders etc.
             // Will be populated after all components are built. Thus, $ is only
             // available after the build!! It is meant to be used during runtime
@@ -258,6 +266,14 @@ define([
                 return (c=='x' ? r : (r&0x3|0x8)).toString(16);
             });
             return uuid;
+        },
+        
+        getStartedWorkflowInstanceId: function(){
+            return this._startedWorkflowInstanceId;
+        },
+        
+        setStartedWorkflowInstanceId: function(instanceId){
+            this._startedWorkflowInstanceId = instanceId;
         },
         
         getTransactionId: function(){

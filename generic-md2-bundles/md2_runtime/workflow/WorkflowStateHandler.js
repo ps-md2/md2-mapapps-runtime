@@ -58,28 +58,35 @@ function(declare, array, Hash, WorkflowStateTransaction, json) {
         startNewTransaction: function(){
             this._currentTransactionCounter = this._currentTransactionCounter + 1;
             this._workflowStateTransactions[this._currentTransactionCounter] = new WorkflowStateTransaction(this._currentTransactionCounter, this._workflowStore, this);
+            var contentProviders = this.$.contentProviderRegistry.getContentProviders();
+            for (var key in contentProviders){
+                var contentProvider = contentProviders[key];
+                if (contentProvider.isRemote()){
+                    contentProvider.setTransactionId(this._currentTransactionCounter);
+                }
+            }
+            
             return this._currentTransactionCounter;
         },
         
         // Save and retrieve workflow instances
         
-        changeWorkflowElement: function(previousControllerId, nextControllerId, nextWorflowElement) {
-            var previousController = this.instance.controllers.get(previousControllerId);
-            var nextController = this.instance.controllers.get(nextControllerId);  
-            nextController._startedWorkflowInstanceId = previousController._startedWorkflowInstanceId;
-            previousController.closeWindow();
-            previousController._isFirstExecution = true;
-            this.instance.workflowStateHandler.setResumeWorkflowElement(nextController._startedWorkflowInstanceId, nextWorflowElement);
+        changeWorkflowElement: function(previousController, nextController, nextWorflowElement) {
+            nextController.setStartedWorkflowInstanceId(previousController.getStartedWorkflowInstanceId());
+            previousController.finish();
+            this.setResumeWorkflowElement(nextController.getStartedWorkflowInstanceId(), nextWorflowElement);
+            nextController.startNewTransaction();
             nextController.openWindow();
         },
             
         fireEventToBackend: function(event, workflowElement, currentController, transactionId){
             var transaction = this._getTransaction(transactionId);
             if (transaction){
-                transaction.fireEventToBackend(event, workflowElement, currentController);
+                transaction.fireEventToBackend(event, workflowElement, currentController.getStartedWorkflowInstanceId());
             }else{
                 Error("Transaction could not be retrieved");
             }
+            currentController.finish();
         },
         
         resetContentProviders: function(transactionId, queriedIds){
@@ -87,9 +94,7 @@ function(declare, array, Hash, WorkflowStateTransaction, json) {
             var contentProviders = this.$.contentProviderRegistry.getContentProviders();
             for (var key in contentProviders){
                 var contentProvider = contentProviders[key];
-                if (contentProvider.isRemote()){
-                    contentProvider.setTransactionId(transactionId);
-                }
+
                 var internalIds = contentProviderIds[key];
 
                 if (internalIds){
