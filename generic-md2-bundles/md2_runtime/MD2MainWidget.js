@@ -201,7 +201,12 @@ define([
             this._window = this._createWindow(wfeId, viewManager);
             
             this.$ = $;
+
+            this._workflowStateHandler.registerMD2MainWidget(wfeId, this);
             
+            
+            var locationFactory = this._locationFactory;
+                      
             lang.mixin($, {
                 dataMapper: dataMapper,
                 eventRegistry: eventRegistry,
@@ -211,7 +216,8 @@ define([
                 notificationService: notificationService,
                 validatorFactory: validatorFactory,
                 actionFactory: actionFactory,
-                workflowEventHandler: workflowEventHandler
+                workflowEventHandler: workflowEventHandler,
+                locationFactory: locationFactory
             });
         },
         
