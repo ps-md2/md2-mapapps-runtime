@@ -82,9 +82,8 @@ function(declare, array, Hash, WorkflowStateTransaction, json) {
             }
         },
         
-        resetContentProviders: function(transactionId, contentProviderIds){
-            var that = this;
-            var contentProviderIds = json.parse(contentProviderIds, true);
+        resetContentProviders: function(transactionId, queriedIds){
+            var contentProviderIds = queriedIds ? json.parse(queriedIds, true) : [];
             var contentProviders = this.$.contentProviderRegistry.getContentProviders();
             for (var key in contentProviders){
                 var contentProvider = contentProviders[key];
@@ -101,7 +100,7 @@ function(declare, array, Hash, WorkflowStateTransaction, json) {
                 
             }
         },
-        
+         
         _getTransaction: function(transactionId){
             var transaction = this._workflowStateTransactions[transactionId];
             return transaction;

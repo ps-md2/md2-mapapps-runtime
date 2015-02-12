@@ -52,9 +52,16 @@ define([
             declare.safeMixin(this, injectedServices);
         },
         
+        startWorkflowFromTool: function(){
+            this.startWorkflow();
+        },
+        
         startWorkflow: function(contentProviderIds)  {
             // start a new transaction
             this._transactionId = this._workflowStateHandler.startNewTransaction();
+            
+            // restore contentProviders
+            this._workflowStateHandler.resetContentProviders(this._transactionId, contentProviderIds);
             
             // staring the workflow...
             // first, check if the workflow has already been started
@@ -67,12 +74,7 @@ define([
                 // simply open this window now...
                 this.openWindow();
             } else {
-                // this workflow has been started in the past
-                
-                // restore contentProviders
-                if (contentProviderIds){
-                    this._workflowStateHandler.resetContentProviders(this._transactionId, contentProviderIds);
-                }
+                // this workflow has been started in the past              
                 
                 // only check for a resume workflow instance, if the global active instance id is the one from this workflow...
                 var resumeWfE = null;
@@ -130,40 +132,6 @@ define([
                     actionFactory.getCustomAction(otherMd2Instance._dataFormBean.onInitialized).execute();
                 } else {
                     otherMd2Instance._viewManager.restoreLastView();
-                }
-            }
-        },
-        
-        openWindowALT: function() {
-            var window = this._window;
-            var actionFactory = this._actionFactory;
-            if (window) {
-                var id = this._dataFormBean.id;
-                var lastWindow = this._workflowStateHandler.getLastWindow(id);
-                // check if there is a last view specified.
-                // if there is one, then open this last view and not
-                // the current one of this active workflow element
-                if(lastWindow !== null) {
-                    // there is a last view specified -> get the md2MainWidget instance
-                    // of this workflow element, because it is needed to "openWindow" this view
-                    var md2MainWidget = this._workflowStateHandler.getMD2MainWidget(lastWindow);
-                    if(md2MainWidget !== null) {
-                        var md2Id = md2MainWidget._dataFormBean.id; // id of the last workflow element
-                        var md2viewManager = md2MainWidget._viewManager; // the view manager of the last workflow element
-                        // create the window which should be opended with the
-                        // md2MainWidget instance of the last workflow element
-                        window = this._createWindow2(md2MainWidget, md2Id, md2viewManager);
-                    }
-                }
-                
-                window.show();
-                                
-                // execute onInitialized action
-                if (this._isFirstExecution) {
-                    this._isFirstExecution = false;
-                    actionFactory.getCustomAction(this._dataFormBean.onInitialized).execute();
-                } else {
-                    this._viewManager.restoreLastView();
                 }
             }
         },
@@ -237,14 +205,6 @@ define([
                 actionFactory: actionFactory,
                 workflowEventHandler: workflowEventHandler
             });
-            this._resetContentProvider();
-        },
-        
-        _resetContentProvider: function(){
-            var contentProviders = this.$.contentProviderRegistry.getContentProviders();
-            for (var contentProvider in contentProviders){
-                 contentProviders[contentProvider].setTransactionId(this._transactionId);
-            };
         },
         
         _createDataForms: function(widgetRegistry, dataMapper, typeFactory, appId) {
@@ -264,31 +224,7 @@ define([
         
         _createWindow: function(wfeId, viewManager) {
             
-            var windowSize = {
-                w: "60%",
-                h: "60%"
-            };
-            
-            var windowProperites = {
-                content: this,
-                title: this._dataFormBean.windowTitle,
-                marginBox: windowSize,
-                minimizeOnClose: true,
-                maximizable: true,
-                windowName: wfeId.concat("_window_root")
-            };
-            
-            var window = this._windowManager.createWindow(windowProperites);
-            
-            // resize data form on window resizing
-            topic.subscribe("md2/window/onResize", lang.hitch(this, function() {
-                viewManager.resizeView();
-            }));
-            
-            return window;
-        },
-        
-        _createWindow2: function(md2MainWidget, wfeId, viewManager) {
+            var  md2MainWidget = this;
             
             var windowSize = {
                 w: "60%",
