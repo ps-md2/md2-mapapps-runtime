@@ -78,12 +78,14 @@ function(declare, lang, array, string, topic, _Type, Hash) {
         /**
          * Identifier of the topic ths content provider publishes to notify the start of a store operation
          */
-        _topicOnStartOperation: "md2/contentProvider/startOperation/${transactionId}",
+        _topicOnStartOperation_template: "md2/contentProvider/startOperation/${transactionId}",
+        _topicOnStartOperation:null,
         
         /**
          * Identifier of the topic ths content provider publishes to notify the finish of a store operation
          */
-        _topicOnFinishOperation: "md2/contentProvider/finishOperation/${transactionId}",
+        _topicOnFinishOperation_template: "md2/contentProvider/finishOperation/${transactionId}",
+        _topicOnFinishOperation:null,
         
         /**
          * By use of this transactionId it is guaranteed, that all contentProviderActions are finished 
@@ -138,8 +140,8 @@ function(declare, lang, array, string, topic, _Type, Hash) {
         setTransactionId: function(transactionId){
             this._transactionId = transactionId; 
             if (transactionId){
-                this._topicOnStartOperation = string.substitute(this._topicOnStartOperation, {transactionId: transactionId});
-                this._topicOnFinishOperation = string.substitute(this._topicOnFinishOperation, {transactionId: transactionId});
+                this._topicOnStartOperation = string.substitute(this._topicOnStartOperation_template, {transactionId: transactionId});
+                this._topicOnFinishOperation = string.substitute(this._topicOnFinishOperation_template, {transactionId: transactionId});
             }
         },
         
@@ -338,9 +340,24 @@ function(declare, lang, array, string, topic, _Type, Hash) {
             }));
         },
         
+        restore: function(internalIds) {
+            var name = this._name;
+           
+            this._store.getMany(internalIds).then(lang.hitch(this, function(results) {
+                if(results.length) {
+                    this._setContent(this._isManyProvider ? results : [results[0]]);
+                } else {
+                    this.reset();
+                }
+                topic.publish(this._topicAction, "success", name, "restore");
+            }), lang.hitch(this, function(error) {
+                topic.publish(this._topicAction, "error", name, "restore", error);
+            }));
+        },
+        
         save: function() {
             var name = this._name;
-            topic.publish(this._topicOnStartOperation, "my String");
+            topic.publish(this._topicOnStartOperation);
             
             this._store.put(this._content).then(lang.hitch(this, function(response) {
                 
