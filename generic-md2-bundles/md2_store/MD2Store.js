@@ -75,7 +75,7 @@ define([
             }
             
             var promise = ct_when(ct_request({
-                url: url + "all/",
+                url: url,
                 content: parameters
             }), function(response) {
                 var result = lang.isArray(response) ? response : [response];
@@ -100,6 +100,19 @@ define([
                 result = this._translateToMD2Types(result);
                 return result.length ? result[0] : null;
             }));
+        },
+        
+        getMany: function(ids) {      
+            var url = this.url;
+            var promise = ct_when(ct_request({
+                url: url + "ids/",
+                content: {ids: ids}
+            },{usePost:true}), function(response) {
+                var result = lang.isArray(response) ? response : [response];
+                return this._translateToMD2Types(result);
+            }, this);
+            
+            return QueryResults(promise);
         },
         
         put: function(object, options) {
