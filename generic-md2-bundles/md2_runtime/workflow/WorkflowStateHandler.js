@@ -1,7 +1,7 @@
 define([
-    "dojo/_base/declare", "dojo/_base/array", "ct/Hash", "./WorkflowStateTransaction"
+    "dojo/_base/declare", "dojo/_base/array", "ct/Hash", "./WorkflowStateTransaction", "dojo/json"
 ],
-function(declare, array, Hash, WorkflowStateTransaction) {
+function(declare, array, Hash, WorkflowStateTransaction, json) {
     
     return declare([], {
         
@@ -82,6 +82,26 @@ function(declare, array, Hash, WorkflowStateTransaction) {
             }
         },
         
+        resetContentProviders: function(transactionId, contentProviderIds){
+            var that = this;
+            var contentProviderIds = json.parse(contentProviderIds, true);
+            var contentProviders = this.$.contentProviderRegistry.getContentProviders();
+            for (var key in contentProviders){
+                var contentProvider = contentProviders[key];
+                if (contentProvider.isRemote()){
+                    contentProvider.setTransactionId(transactionId);
+                }
+                var internalIds = contentProviderIds[key];
+
+                if (internalIds){
+                    contentProvider.restore(internalIds);
+                } else {
+                    contentProvider.reset();
+                }
+                
+            }
+        },
+        
         _getTransaction: function(transactionId){
             var transaction = this._workflowStateTransactions[transactionId];
             return transaction;
@@ -91,18 +111,22 @@ function(declare, array, Hash, WorkflowStateTransaction) {
             var contentProviders = this.$.contentProviderRegistry.getContentProviders();
             var result = {};
             for (var key in contentProviders){
-                result[key] = [];
+                var entries = [];
                 var content = contentProviders[key].getContent();
                 if (!contentProviders[key]._isManyProvider){
                     if (content.hasInternalID()){
-                        result[key].push(content.getInternalID());
+                        entries.push(content.getInternalID());
                     }
                 }else{
                     array.forEach(content, function(entry){
                         if (entry.hasInternalID()){
-                            result[key].push(entry.getInternalID());
+                            entries.push(entry.getInternalID());
                         }
                     });
+                }
+                
+                if (entries.length > 0){
+                    result[key] = entries;
                 }
             }
             return result;
