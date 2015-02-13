@@ -56,7 +56,7 @@ define([
             this.startWorkflow();
         },
         
-        startWorkflow: function(contentProviderIds)  {
+        startWorkflow: function(contentProviderIds, instanceId)  {
             // start a new transaction
             this.startNewTransaction();
             
@@ -65,11 +65,15 @@ define([
             // in case it has been started, the variable '_startedWorkflowInstanceId'
             // is already set, otherwise it is null...
             if(this._startedWorkflowInstanceId === null) {
+                this.$.workflowEventHandler.resetAll();
+                
                 // restore contentProviders
                 this._workflowStateHandler.resetContentProviders(this._transactionId, contentProviderIds);
                 // workflow instance started for first time...
                 // generate and save a new workflow instance ID...
                 this._startedWorkflowInstanceId = this.generateUUID();
+                
+
                 // simply open this window now...
                 this.openWindow();
             } else {
@@ -80,6 +84,8 @@ define([
                 if(this._startedWorkflowInstanceId === this._workflowStateHandler.getCurrentActiveWorkflowInstance()) {
                     var resumeWfE = this._workflowStateHandler.getResumeWorkflowElement(this._startedWorkflowInstanceId);
                 }else{
+                    this.$.workflowEventHandler.resetAll();
+                    this._startedWorkflowInstanceId = instanceId;
                     // restore contentProviders
                     this._workflowStateHandler.resetContentProviders(this._transactionId, contentProviderIds);
                     this._isFirstExecution = true;
@@ -153,8 +159,11 @@ define([
         
         finish: function() {
             this._isFirstExecution = true;
-            this._startedWorkflowInstanceId = null;
             this.closeWindow();
+            if (this._startedWorkflowInstanceId){
+                this.build();
+            }
+            this._startedWorkflowInstanceId = null;
         },
         
         build: function() {

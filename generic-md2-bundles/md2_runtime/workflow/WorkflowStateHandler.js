@@ -43,7 +43,7 @@ function(declare, array, Hash, WorkflowStateTransaction, json) {
             this._resumeWorkflowInstance.set(workflowInstanceId, workflowElementId);
         },
         
-        _removeWorkflowInstanceId: function(workflowInstanceId){
+        removeWorkflowInstanceId: function(workflowInstanceId){
             this._resumeWorkflowInstance.remove(workflowInstanceId);
             if (workflowInstanceId === this._currentActiveWorkflowInstanceId){
                this._currentActiveWorkflowInstanceId = null;
@@ -93,8 +93,6 @@ function(declare, array, Hash, WorkflowStateTransaction, json) {
             }else{
                 Error("Transaction could not be retrieved");
             }
-            this._removeWorkflowInstanceId(currentController.getStartedWorkflowInstanceId());
-            currentController.finish();
         },
         
         resetContentProviders: function(transactionId, queriedIds){
