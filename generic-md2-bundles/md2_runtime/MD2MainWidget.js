@@ -60,26 +60,29 @@ define([
             // start a new transaction
             this.startNewTransaction();
             
-            // restore contentProviders
-            this._workflowStateHandler.resetContentProviders(this._transactionId, contentProviderIds);
-            
             // staring the workflow...
             // first, check if the workflow has already been started
             // in case it has been started, the variable '_startedWorkflowInstanceId'
             // is already set, otherwise it is null...
             if(this._startedWorkflowInstanceId === null) {
+                // restore contentProviders
+                this._workflowStateHandler.resetContentProviders(this._transactionId, contentProviderIds);
                 // workflow instance started for first time...
                 // generate and save a new workflow instance ID...
                 this._startedWorkflowInstanceId = this.generateUUID();
                 // simply open this window now...
                 this.openWindow();
             } else {
-                // this workflow has been started in the past              
-                
+                // this workflow has been started in the past     
+
                 // only check for a resume workflow instance, if the global active instance id is the one from this workflow...
                 var resumeWfE = null;
                 if(this._startedWorkflowInstanceId === this._workflowStateHandler.getCurrentActiveWorkflowInstance()) {
                     var resumeWfE = this._workflowStateHandler.getResumeWorkflowElement(this._startedWorkflowInstanceId);
+                }else{
+                    // restore contentProviders
+                    this._workflowStateHandler.resetContentProviders(this._transactionId, contentProviderIds);
+                    this._isFirstExecution = true;
                 }
                 
                 // get the workflow element to which to resume to (if any..)
