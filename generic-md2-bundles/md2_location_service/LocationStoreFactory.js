@@ -33,6 +33,51 @@ define([
         
         constructor: function(options) {
             declare.safeMixin(this, options);
+                     
+            /*
+            var long = 7.6138365084488182;
+            var lat  = 51.963565792751922;
+            
+            console && console.debug( "   get Location to Address: [LONGITUDE=" + long + ", LATITUDE=" + lat + "]" );
+            
+            var promise = this._getLocationToAddress(long, lat);            
+                        
+            promise = promise.then(lang.hitch(this, function(addressCandidate) {
+                
+                var city = addressCandidate.address.City;
+                var address = addressCandidate.address.Address;
+                var postal = addressCandidate.address.Postal;
+                
+                console && console.debug( 
+                        "CITY="+city + ", " +
+                        "ADDRESS="+address + ", " +
+                        "POSTAL="+postal);
+            }));
+            
+            console && console.debug( " ************** " );
+            
+            var addressString = "Schlossplatz 2 Münster 48149";
+            
+            var lat = this._getLatitude(addressString);
+            
+            console && console.debug( "Latitude for address [" + addressString + "] is: " + lat);
+            */
+        },
+                
+        _getAddressForLocation: function(longitude, latitude) {
+            var locator = new Locator(this.url);
+            var promise = locator.locationToAddress(new Point(longitude, latitude), 1000);
+            return promise;
+        },
+        
+        _getLocationForAddress: function(singleLineAddress) {
+            var locator = new Locator(this.url);
+            
+            var address = {"singleLine": singleLineAddress};
+            var params = {address: address};
+            var promise = locator.addressToLocations(params);
+            
+            return promise;
         },
         
         _reverseGeoCode: function() {
@@ -153,7 +198,31 @@ define([
             options.url = options.url || this._properties.url;
             options.locationHandler = this._locationHandler;
             return new LocationStore(options);
-        }
+        }, 
         
+        getAddress: function(longitude, latitude) {
+            var promise = this._getLocationToAddress(longitude, latitude);
+            
+            var address = null;
+                        
+            promise = promise.then(lang.hitch(this, function(addressCandidate) {
+                
+                var city = addressCandidate.address.City;
+                var address = addressCandidate.address.Address;
+                var postal = addressCandidate.address.Postal;
+                
+                address = "CITY="+city + ", " +
+                        "ADDRESS="+address + ", " +
+                        "POSTAL="+postal;
+            }));
+            
+            return address;
+        },
+        
+        _getLocationToAddress: function(longitude, latitude) {
+            var locator = new Locator(this.url);
+            var promise = locator.locationToAddress(new Point(longitude, latitude), 1000);
+            return promise;
+        }        
     });
 });

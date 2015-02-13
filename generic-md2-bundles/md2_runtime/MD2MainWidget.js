@@ -45,29 +45,44 @@ define([
         _isFirstExecution: true,
         
         _startedWorkflowInstanceId: null,
+        
+        _transactionId: null,
                 
         constructor: function(injectedServices) {
             declare.safeMixin(this, injectedServices);
         },
         
-        startWorkflow: function()  {
+        startWorkflowFromTool: function(){
+            this.startWorkflow();
+        },
+        
+        startWorkflow: function(contentProviderIds)  {
+            // start a new transaction
+            this.startNewTransaction();
+            
             // staring the workflow...
             // first, check if the workflow has already been started
             // in case it has been started, the variable '_startedWorkflowInstanceId'
             // is already set, otherwise it is null...
             if(this._startedWorkflowInstanceId === null) {
+                // restore contentProviders
+                this._workflowStateHandler.resetContentProviders(this._transactionId, contentProviderIds);
                 // workflow instance started for first time...
                 // generate and save a new workflow instance ID...
                 this._startedWorkflowInstanceId = this.generateUUID();
                 // simply open this window now...
                 this.openWindow();
             } else {
-                // this workflow has been started in the past
-                
+                // this workflow has been started in the past     
+
                 // only check for a resume workflow instance, if the global active instance id is the one from this workflow...
                 var resumeWfE = null;
                 if(this._startedWorkflowInstanceId === this._workflowStateHandler.getCurrentActiveWorkflowInstance()) {
                     var resumeWfE = this._workflowStateHandler.getResumeWorkflowElement(this._startedWorkflowInstanceId);
+                }else{
+                    // restore contentProviders
+                    this._workflowStateHandler.resetContentProviders(this._transactionId, contentProviderIds);
+                    this._isFirstExecution = true;
                 }
                 
                 // get the workflow element to which to resume to (if any..)
@@ -85,6 +100,10 @@ define([
                     this.openWindowWithMD2Instance(md2MainWidgetInstanceOfResumeWfE);
                 }
             }
+        },
+        
+        startNewTransaction: function(){
+             this._transactionId = this._workflowStateHandler.startNewTransaction();
         },
         
         openWindow: function() {
@@ -124,46 +143,18 @@ define([
             }
         },
         
-        openWindowALT: function() {
-            var window = this._window;
-            var actionFactory = this._actionFactory;
-            if (window) {
-                var id = this._dataFormBean.id;
-                var lastWindow = this._workflowStateHandler.getLastWindow(id);
-                // check if there is a last view specified.
-                // if there is one, then open this last view and not
-                // the current one of this active workflow element
-                if(lastWindow !== null) {
-                    // there is a last view specified -> get the md2MainWidget instance
-                    // of this workflow element, because it is needed to "openWindow" this view
-                    var md2MainWidget = this._workflowStateHandler.getMD2MainWidget(lastWindow);
-                    if(md2MainWidget !== null) {
-                        var md2Id = md2MainWidget._dataFormBean.id; // id of the last workflow element
-                        var md2viewManager = md2MainWidget._viewManager; // the view manager of the last workflow element
-                        // create the window which should be opended with the
-                        // md2MainWidget instance of the last workflow element
-                        window = this._createWindow2(md2MainWidget, md2Id, md2viewManager);
-                    }
-                }
-                
-                window.show();
-                                
-                // execute onInitialized action
-                if (this._isFirstExecution) {
-                    this._isFirstExecution = false;
-                    actionFactory.getCustomAction(this._dataFormBean.onInitialized).execute();
-                } else {
-                    this._viewManager.restoreLastView();
-                }
-            }
-        },
-        
         closeWindow: function() {
             var window = this._window;
             if (window) {
                 this._viewManager.destroyCurrentView();
                 window.hide();
             }
+        },
+        
+        finish: function() {
+            this._isFirstExecution = true;
+            this._startedWorkflowInstanceId = null;
+            this.closeWindow();
         },
         
         build: function() {
@@ -176,30 +167,30 @@ define([
             // injected notification service
             var notificationService = this._notificationService;
             
-            // injected custom actions
-            var customActions = this._customActions;
-            
             // injected entities and enums
             var modelFactories = this._models;
+            
+            // injected custom actions
+            var customActions = this._customActions;
             
             // injected workflow event handler
             var workflowEventHandler = this._workflowEventHandler;
             
+            this._workflowStateHandler.registerMD2MainWidget(wfeId, this);
+            
+            workflowEventHandler.workflowStateHandler = this._workflowStateHandler;
+                  
             // Object of references to be passed to actions/contentProviders etc.
             // Will be populated after all components are built. Thus, $ is only
             // available after the build!! It is meant to be used during runtime
             // to easily access all components.
             var $ = {};
-            
-            var typeFactory = new TypeFactory(modelFactories);
-            
-            var contentProviderRegistry = new ContentProviderRegistry();
-            this._createContentProviders(appId, contentProviderRegistry, typeFactory, $);
+            lang.mixin($, this._workflowStateHandler.$);
             
             var dataMapper = new DataMapper();
             
             var widgetRegistry = new WidgetRegistry();
-            var viewManager = this._createDataForms(widgetRegistry, dataMapper, typeFactory, appId);
+            var viewManager = this._createDataForms(widgetRegistry, dataMapper, $.typeFactory, appId);
             this._viewManager = viewManager;
             
             var eventRegistry = new EventRegistry(appId);
@@ -212,37 +203,25 @@ define([
             
             this._window = this._createWindow(wfeId, viewManager);
             
+            this.$ = $;
+
             this._workflowStateHandler.registerMD2MainWidget(wfeId, this);
-                       
+            
+            
+            var locationFactory = this._locationFactory;
+                      
             lang.mixin($, {
                 dataMapper: dataMapper,
                 eventRegistry: eventRegistry,
-                contentProviderRegistry: contentProviderRegistry,
                 viewManager: viewManager,
                 widgetRegistry: widgetRegistry,
                 dataEventHandler: dataEventHandler,
                 notificationService: notificationService,
                 validatorFactory: validatorFactory,
                 actionFactory: actionFactory,
-                typeFactory: typeFactory,
-                create: typeFactory.create,
-                workflowEventHandler: workflowEventHandler
+                workflowEventHandler: workflowEventHandler,
+                locationFactory: locationFactory
             });
-        },
-        
-        _createContentProviders: function(appId, contentProviderRegistry, typeFactory, $) {
-            // custom content providers
-            var contentProviderFactories = this._contentProviders;
-            array.forEach(contentProviderFactories, function(contentProviderFactory) {
-                var contentProvider = contentProviderFactory.create(typeFactory, $);
-                contentProviderRegistry.registerContentProvider(contentProvider);
-            });
-            
-            // instantiate location content provider
-            var locationProviderFactory = new LocationProviderFactory();
-            var locationStoreFactory = this._locationFactory;
-            var locationProvider = locationProviderFactory.create(appId, locationStoreFactory, typeFactory);
-            contentProviderRegistry.registerContentProvider(locationProvider);
         },
         
         _createDataForms: function(widgetRegistry, dataMapper, typeFactory, appId) {
@@ -262,31 +241,7 @@ define([
         
         _createWindow: function(wfeId, viewManager) {
             
-            var windowSize = {
-                w: "60%",
-                h: "60%"
-            };
-            
-            var windowProperites = {
-                content: this,
-                title: this._dataFormBean.windowTitle,
-                marginBox: windowSize,
-                minimizeOnClose: true,
-                maximizable: true,
-                windowName: wfeId.concat("_window_root")
-            };
-            
-            var window = this._windowManager.createWindow(windowProperites);
-            
-            // resize data form on window resizing
-            topic.subscribe("md2/window/onResize", lang.hitch(this, function() {
-                viewManager.resizeView();
-            }));
-            
-            return window;
-        },
-        
-        _createWindow2: function(md2MainWidget, wfeId, viewManager) {
+            var  md2MainWidget = this;
             
             var windowSize = {
                 w: "60%",
@@ -320,6 +275,18 @@ define([
                 return (c=='x' ? r : (r&0x3|0x8)).toString(16);
             });
             return uuid;
-        }        
+        },
+        
+        getStartedWorkflowInstanceId: function(){
+            return this._startedWorkflowInstanceId;
+        },
+        
+        setStartedWorkflowInstanceId: function(instanceId){
+            this._startedWorkflowInstanceId = instanceId;
+        },
+        
+        getTransactionId: function(){
+            return this._transactionId;
+        }
     });
 });

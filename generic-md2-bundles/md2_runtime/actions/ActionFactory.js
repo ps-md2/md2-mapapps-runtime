@@ -7,7 +7,8 @@ define([
     "./simpleactions/FireEventAction",
     "./simpleactions/DisableAction",
     "./simpleactions/DisplayMessageAction",
-    "./simpleactions/GotoViewAction"
+    "./simpleactions/GotoViewAction",
+    "./simpleactions/LocationAction"
 ], function(
     declare,
     array,
@@ -17,7 +18,8 @@ define([
     FireEventAction,
     DisableAction,
     DisplayMessageAction,
-    GotoViewAction
+    GotoViewAction,
+    LocationAction
 ) {
     
     return declare([], {
@@ -86,6 +88,18 @@ define([
         
         getFireEventAction: function(workflowelement, event){
             var action = new FireEventAction(workflowelement, event);
+            action.$ = this._references;
+            return action;
+        },
+        
+        getLocationAction: function(cityInput, cityProvider, streetInput, streetProvider,
+                              streetNumberInput, streetNumberProvider, postalInput, postalProvider,
+                              countryInput, countryProvider, latitudeOutput,
+                              longitudeOutput, latitudeProvider, longitudeProvider){
+            var action = new LocationAction(cityInput, cityProvider, streetInput, streetProvider,
+                              streetNumberInput, streetNumberProvider, postalInput, postalProvider,
+                              countryInput, countryProvider, latitudeOutput,
+                              longitudeOutput, latitudeProvider, longitudeProvider);
             action.$ = this._references;
             return action;
         }

@@ -76,6 +76,29 @@ function(declare, lang, array, string, topic, _Type, Hash) {
         _topicOnChange: "md2/contentProvider/onChange/${appId}",
         
         /**
+         * Identifier of the topic ths content provider publishes to notify the start of a store operation
+         */
+        _topicOnStartOperation_template: "md2/contentProvider/startOperation/${transactionId}",
+        _topicOnStartOperation:null,
+        
+        /**
+         * Identifier of the topic ths content provider publishes to notify the finish of a store operation
+         */
+        _topicOnFinishOperation_template: "md2/contentProvider/finishOperation/${transactionId}",
+        _topicOnFinishOperation:null,
+        
+        /**
+         * By use of this transactionId it is guaranteed, that all contentProviderActions are finished 
+         * before the next workflow element is started.
+         */
+        _transactionId: null,
+        
+        /**
+         * Specifies if the store of this contentprovider is of type remote
+         */
+        _isRemote: null,
+        
+        /**
          * Debug messages
          */
         _DEBUG_MSG: {
@@ -97,10 +120,11 @@ function(declare, lang, array, string, topic, _Type, Hash) {
          * @param {boolean} isManyProvider
          * @param {Object} filter
          */
-        constructor: function(name, appId, store, isManyProvider, filter) {
+        constructor: function(name, appId, store, isManyProvider, filter, isRemote) {
             !name && window.console && window.console.error(this._DEBUG_MSG["nameParamErr"]);
             !store && window.console && window.console.error(this._DEBUG_MSG["storeParamErr"]);
             this._name = name;
+            this._isRemote = isRemote;
             
             this._topicAction = string.substitute(this._topicAction, {appId: appId});
             this._topicOnChange = string.substitute(this._topicOnChange, {appId: appId});
@@ -111,6 +135,14 @@ function(declare, lang, array, string, topic, _Type, Hash) {
             this._filter = filter;
             this._isManyProvider = isManyProvider || false;
             this.reset();
+        },
+        
+        setTransactionId: function(transactionId){
+            this._transactionId = transactionId; 
+            if (transactionId){
+                this._topicOnStartOperation = string.substitute(this._topicOnStartOperation_template, {transactionId: transactionId});
+                this._topicOnFinishOperation = string.substitute(this._topicOnFinishOperation_template, {transactionId: transactionId});
+            }
         },
         
         getContent: function() {
@@ -308,18 +340,42 @@ function(declare, lang, array, string, topic, _Type, Hash) {
             }));
         },
         
+        restore: function(internalIds) {
+            var name = this._name;
+           
+            this._store.getMany(internalIds).then(lang.hitch(this, function(results) {
+                if(results.length) {
+                    this._setContent(this._isManyProvider ? results : [results[0]]);
+                } else {
+                    this.reset();
+                }
+                topic.publish(this._topicAction, "success", name, "restore");
+            }), lang.hitch(this, function(error) {
+                topic.publish(this._topicAction, "error", name, "restore", error);
+            }));
+        },
+        
         save: function() {
             var name = this._name;
+            //To ensure the correct finish topic even if transactionId changes
+            var topicOnFinish = this._topicOnFinishOperation;
+            topic.publish(this._topicOnStartOperation);
             
             this._store.put(this._content).then(lang.hitch(this, function(response) {
                 
+                var internalIds = [];
                 // mixin internalIds from backend
                 for(var i = 0; i < response.length; i++) {
                     this._content[i].setInternalID(response[i].__internalId);
                 }
-                
+                if (this.isRemote()){
+                    topic.publish(topicOnFinish);
+                }else{
+                    topic.publish(topicOnFinish);
+                }
                 topic.publish(this._topicAction, "success", name, "save");
             }), lang.hitch(this, function(error) {
+                topic.publish(this._topicOnFinishOperation);
                 topic.publish(this._topicAction, "error", name, "save", error);
             }));
         },
@@ -340,9 +396,12 @@ function(declare, lang, array, string, topic, _Type, Hash) {
                     return entity.getInternalID();
                 }, this);
                 
+                topic.publish(this._topicOnStartOperation);
                 this._store.remove(ids).then(function() {
+                    topic.publish(this._topicOnFinishOperation);
                     topic.publish(this._topicAction, "success", this._name, "remove");
                 }, function(error) {
+                    topic.publish(this._topicOnFinishOperation);
                     topic.publish(this._topicAction, "error", this._name, "remove", error);
                 });
             }
@@ -350,6 +409,10 @@ function(declare, lang, array, string, topic, _Type, Hash) {
         
         getName: function() {
             return this._name;
+        },
+        
+        isRemote: function() {
+            return this._isRemote;
         }
         
     });

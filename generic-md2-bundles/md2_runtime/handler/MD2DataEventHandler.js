@@ -86,13 +86,15 @@ function(declare, lang, string, topic, domStyle) {
                 var successMessage = {
                     load: "Data sucessfully loaded.",
                     save: "Data sucessfully saved.",
-                    remove: "Data sucessfully removed."
+                    remove: "Data sucessfully removed.",
+                    restore: "Data sucessfully restored"
                 };
                 
                 var errorMessage = {
                     load: "Error on loading data.",
                     save: "Error on saving data.",
-                    remove: "Error on removing data."
+                    remove: "Error on removing data.",
+                    restore: "Error on restoring data"
                 };
                 
                 var logService = this._notificationService;

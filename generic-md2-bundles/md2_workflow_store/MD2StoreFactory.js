@@ -29,15 +29,15 @@ define([
          * @returns {MD2WorkflowStore}
          */
         create: function() {
-            var serviceUri = this._properties.uri;
+            var url = this._properties.url;
             var appId = this._properties.app;
-            if (!serviceUri || !appId) {
-                throw new Error("[MD2StoreFactory] The properties 'uri' or 'app' are missing "
+            if (!url || !appId) {
+                throw new Error("[MD2StoreFactory] The properties 'url' or 'app' are missing "
                         + "in the configuration object of method #create!");
             }
             
             var options = {
-                url: serviceUri,
+                url: url,
                 app: appId
             };
             

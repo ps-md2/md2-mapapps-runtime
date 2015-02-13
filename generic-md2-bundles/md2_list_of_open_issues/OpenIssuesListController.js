@@ -48,7 +48,7 @@ define(["dojo/_base/declare",
                         this.workflow_store.get(evt.itemId).then(function(result){
                             var mainWidget = that._workflowStateHandler.getMD2MainWidget("md2_"+result.currentWorkflowElement);
                             mainWidget._startedWorkflowInstanceId = result.instanceId;
-                            mainWidget.startWorkflow();
+                            mainWidget.startWorkflow(result.contentProviderIds);
                         });
                     });
                     return dataView;

@@ -28,7 +28,8 @@ define([
         /**
          * URL of the web service
          */
-        url: null,
+        url_workflowState: null,
+        url_eventHandler: null,
 
         /**
          * On every request:
@@ -62,11 +63,13 @@ define([
             
             // ensure trailing slash
             this.url = this.url.replace(/\/+$/, "") + "/";
+            this.url_workflowState = this.url + "workflowState/";
+            this.url_eventHandler = this.url + "eventHandler/";
         },
         
         query: function(query, options) {
             
-            var url = this.url;
+            var url = this.url_workflowState;
             var parameters = {
                 app : this.app
             };
@@ -104,7 +107,7 @@ define([
         
         get: function(id) {
             
-            var url = this.url;
+            var url = this.url_workflowState;
             
             var promise = ct_when(ct_request({
                 url: url + id
@@ -146,6 +149,27 @@ define([
                     id: ids
                 }
             });*/
+        },
+        
+        fireEventToBackend: function(parameters, contentProviderIds){
+                        
+            if (!parameters.instanceId) {
+                throw new Error("[MD2WorkflowStore] Required property 'instanceId' in parameters is not set!");
+            }
+            
+            if (!parameters.lastEventFired) {
+                throw new Error("[MD2WorkflowStore] Required property 'lastEventFired' in parameters is not set!");
+            }
+            
+            if (!parameters.currentWfe) {
+                throw new Error("[MD2WorkflowStore] Required property 'currentWfe' in parameters is not set!");
+            }
+            var requestArgs = {
+                        url: this.url_eventHandler,
+                        content: parameters,
+                        handleAs: "json"
+                    };
+            ct_request(requestArgs,{usePost:true});
         },
         
         /**
