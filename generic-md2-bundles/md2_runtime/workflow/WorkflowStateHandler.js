@@ -31,16 +31,23 @@ function(declare, array, Hash, WorkflowStateTransaction, json) {
             this._currentActiveWorkflowInstanceId = newActiveWorkflowInstanceId;
         },
         
-        getResumeWorkflowElement: function(workflowElementId) {
-            var resumeWorkflowElement = this._resumeWorkflowInstance.get(workflowElementId);
+        getResumeWorkflowElement: function(workflowInstanceId) {
+            var resumeWorkflowElement = this._resumeWorkflowInstance.get(workflowInstanceId);
             if(!resumeWorkflowElement) {
                 return null;
             }
             return resumeWorkflowElement;
         },
         
-        setResumeWorkflowElement: function(instanceId, workflowElementId) {
-            this._resumeWorkflowInstance.set(instanceId, workflowElementId);
+        setResumeWorkflowElement: function(workflowInstanceId, workflowElementId) {
+            this._resumeWorkflowInstance.set(workflowInstanceId, workflowElementId);
+        },
+        
+        _removeWorkflowInstanceId: function(workflowInstanceId){
+            this._resumeWorkflowInstance.remove(workflowInstanceId);
+            if (workflowInstanceId === this._currentActiveWorkflowInstanceId){
+               this._currentActiveWorkflowInstanceId = null;
+            }
         },
         
         registerMD2MainWidget: function(workflowElementId, md2MainWidget) {
@@ -86,6 +93,7 @@ function(declare, array, Hash, WorkflowStateTransaction, json) {
             }else{
                 Error("Transaction could not be retrieved");
             }
+            this._removeWorkflowInstanceId(currentController.getStartedWorkflowInstanceId());
             currentController.finish();
         },
         
