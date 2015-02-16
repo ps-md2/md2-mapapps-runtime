@@ -47,12 +47,19 @@ define([
         _startedWorkflowInstanceId: null,
         
         _transactionId: null,
+        
+        _workflowStateHandler: null,
                 
         constructor: function(injectedServices) {
             declare.safeMixin(this, injectedServices);
         },
         
         startWorkflowFromTool: function(){
+            if (!this._dataFormBean.id === this._workflowStateHandler.getLastStartedTool || !this.isActiveWorkflowInstace()){
+                this.$.workflowEventHandler.resetAll();
+                this._workflowStateHandler.setCurrentActiveWorkflowInstance(null);
+                this._workflowStateHandler.setLastStartedTool(this._dataFormBean.id);
+            }
             this.startWorkflow();
         },
         
@@ -61,34 +68,35 @@ define([
             this.startNewTransaction();
             
             // staring the workflow...
-            // first, check if the workflow has already been started
-            // in case it has been started, the variable '_startedWorkflowInstanceId'
+            // first, check if there is a running workflowInstance
+            // in case it is, the function value of 'getWorkflowInstanceId'
             // is already set, otherwise it is null...
-            if(this._startedWorkflowInstanceId === null) {
+            if(this.getActiveWorkflowInstanceId() === null) {
                 this.$.workflowEventHandler.resetAll();
                 
                 // restore contentProviders
                 this._workflowStateHandler.resetContentProviders(this._transactionId, contentProviderIds);
                 // workflow instance started for first time...
                 // generate and save a new workflow instance ID...
-                this._startedWorkflowInstanceId = this.generateUUID();
+                this.generateActiveWorkflowInstanceId();
                 
 
                 // simply open this window now...
                 this.openWindow();
             } else {
-                // this workflow has been started in the past     
+                // a workflow instance has been started in the past     
 
                 // only check for a resume workflow instance, if the global active instance id is the one from this workflow...
+                // if instanceId is null, then the local id is used
                 var resumeWfE = null;
-                if(this._startedWorkflowInstanceId === this._workflowStateHandler.getCurrentActiveWorkflowInstance()) {
-                    var resumeWfE = this._workflowStateHandler.getResumeWorkflowElement(this._startedWorkflowInstanceId);
+                if(this.isActiveWorkflowInstace(instanceId)) {
+                    var resumeWfE = this._workflowStateHandler.getResumeWorkflowElement(this.getActiveWorkflowInstanceId());
                 }else{
+                    this.setActiveWorkflowInstanceId(instanceId);
                     this.$.workflowEventHandler.resetAll();
-                    this._startedWorkflowInstanceId = instanceId;
+
                     // restore contentProviders
                     this._workflowStateHandler.resetContentProviders(this._transactionId, contentProviderIds);
-                    this._isFirstExecution = true;
                 }
                 
                 // get the workflow element to which to resume to (if any..)
@@ -133,7 +141,7 @@ define([
         },
         
         openWindowWithMD2Instance: function(otherMd2Instance) {
-            this._workflowStateHandler.setCurrentActiveWorkflowInstance(this._startedWorkflowInstanceId);
+            this._workflowStateHandler.setCurrentActiveWorkflowInstance(this.getActiveWorkflowInstanceId());
             var window = otherMd2Instance._window;
             var actionFactory = otherMd2Instance._actionFactory;
             if (window) {
@@ -160,10 +168,10 @@ define([
         finish: function() {
             this._isFirstExecution = true;
             this.closeWindow();
-            if (this._startedWorkflowInstanceId){
+            if (!this.isActiveWorkflowInstace()){
                 this.build();
             }
-            this._startedWorkflowInstanceId = null;
+            this.setActiveWorkflowInstanceId(null);
         },
         
         build: function() {
@@ -276,22 +284,34 @@ define([
             return window;
         },
         
-        generateUUID: function( ){
-            var d = new Date().getTime();
-            var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-                var r = (d + Math.random()*16)%16 | 0;
-                d = Math.floor(d/16);
-                return (c=='x' ? r : (r&0x3|0x8)).toString(16);
-            });
-            return uuid;
-        },
-        
-        getStartedWorkflowInstanceId: function(){
+        getActiveWorkflowInstanceId: function(){
+            if (this._startedWorkflowInstanceId === null){
+                this._startedWorkflowInstanceId = this._workflowStateHandler.getCurrentActiveWorkflowInstance();
+            }
             return this._startedWorkflowInstanceId;
         },
         
-        setStartedWorkflowInstanceId: function(instanceId){
-            this._startedWorkflowInstanceId = instanceId;
+        /**
+         * if instanceId is null, the instaneId of the workflowStateHandler is used
+         * @param {type} instanceId 
+         * @returns {undefined}
+         */
+        setActiveWorkflowInstanceId: function(instanceId){
+            if (instanceId){
+                this._startedWorkflowInstanceId = instanceId;
+                this._workflowStateHandler.setCurrentActiveWorkflowInstance(instanceId);
+            } else {
+                this._startedWorkflowInstanceI = this._workflowStateHandler.getCurrentActiveWorkflowInstance(instanceId);
+            }
+        },
+        
+        generateActiveWorkflowInstanceId: function(){
+            this._startedWorkflowInstanceId = this._workflowStateHandler.generateCurrentActiveWorkflowInstance();
+        },
+        
+        isActiveWorkflowInstace: function(workflowInstance){
+            var instanceId = workflowInstance ? workflowInstance : this.getActiveWorkflowInstanceId();
+            return instanceId === this._workflowStateHandler.getCurrentActiveWorkflowInstance();
         },
         
         getTransactionId: function(){

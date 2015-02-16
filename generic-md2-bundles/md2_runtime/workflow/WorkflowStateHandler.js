@@ -11,6 +11,7 @@ function(declare, array, Hash, WorkflowStateTransaction, json) {
         _currentActiveWorkflowInstanceId:null,
         _workflowStateTransactions:null,
         _currentTransactionCounter: null,
+        _lastStartedTool: null,
         $:null,
 
         constructor: function(store, $) {
@@ -28,7 +29,14 @@ function(declare, array, Hash, WorkflowStateTransaction, json) {
         },
         
         setCurrentActiveWorkflowInstance: function(newActiveWorkflowInstanceId) {
-            this._currentActiveWorkflowInstanceId = newActiveWorkflowInstanceId;
+            if (this._currentActiveWorkflowInstanceId !== newActiveWorkflowInstanceId){
+                this.removeWorkflowInstanceId(this._currentActiveWorkflowInstanceId);
+                this._currentActiveWorkflowInstanceId = newActiveWorkflowInstanceId;
+            }
+        },
+        generateCurrentActiveWorkflowInstance: function(){
+            this._currentActiveWorkflowInstanceId=this._generateUUID();
+            return this._currentActiveWorkflowInstanceId;
         },
         
         getResumeWorkflowElement: function(workflowInstanceId) {
@@ -79,9 +87,9 @@ function(declare, array, Hash, WorkflowStateTransaction, json) {
         // Save and retrieve workflow instances
         
         changeWorkflowElement: function(previousController, nextController, nextWorflowElement) {
-            nextController.setStartedWorkflowInstanceId(previousController.getStartedWorkflowInstanceId());
+            nextController.setActiveWorkflowInstanceId(previousController.getActiveWorkflowInstanceId());
             previousController.finish();
-            this.setResumeWorkflowElement(nextController.getStartedWorkflowInstanceId(), nextWorflowElement);
+            this.setResumeWorkflowElement(this.getCurrentActiveWorkflowInstance(), nextWorflowElement);
             nextController.startNewTransaction();
             nextController.openWindow();
         },
@@ -89,10 +97,12 @@ function(declare, array, Hash, WorkflowStateTransaction, json) {
         fireEventToBackend: function(event, workflowElement, currentController, transactionId){
             var transaction = this._getTransaction(transactionId);
             if (transaction){
-                transaction.fireEventToBackend(event, workflowElement, currentController.getStartedWorkflowInstanceId());
+                transaction.fireEventToBackend(event, workflowElement, currentController.getActiveWorkflowInstanceId());
             }else{
                 Error("Transaction could not be retrieved");
             }
+            this.setCurrentActiveWorkflowInstance(null);
+            this.setLastStartedTool(null);
         },
         
         resetContentProviders: function(transactionId, queriedIds){
@@ -140,6 +150,21 @@ function(declare, array, Hash, WorkflowStateTransaction, json) {
                 }
             }
             return result;
+        },        
+        _generateUUID: function( ){
+            var d = new Date().getTime();
+            var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                var r = (d + Math.random()*16)%16 | 0;
+                d = Math.floor(d/16);
+                return (c=='x' ? r : (r&0x3|0x8)).toString(16);
+            });
+            return uuid;
+        },
+        setLastStartedTool: function(lastStartedTool){
+            this._lastStartedTool = lastStartedTool;
+        },
+        getLastStartedTool: function(){
+            return this._lastStartedTool;
         }
     });
 });
