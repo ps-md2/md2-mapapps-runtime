@@ -8,7 +8,8 @@ define([
     "./simpleactions/DisableAction",
     "./simpleactions/DisplayMessageAction",
     "./simpleactions/GotoViewAction",
-    "./simpleactions/LocationAction"
+    "./simpleactions/LocationAction",
+    "./simpleactions/WebServiceCallAction"
 ], function(
     declare,
     array,
@@ -19,7 +20,8 @@ define([
     DisableAction,
     DisplayMessageAction,
     GotoViewAction,
-    LocationAction
+    LocationAction,
+    WebServiceCallAction
 ) {
     
     return declare([], {
@@ -100,6 +102,12 @@ define([
                               streetNumberInput, streetNumberProvider, postalInput, postalProvider,
                               countryInput, countryProvider, latitudeOutput,
                               longitudeOutput, latitudeProvider, longitudeProvider);
+            action.$ = this._references;
+            return action;
+        },
+        
+        getWebServiceCallAction: function(url, method, queryParams, bodyParams){
+            var action = new WebServiceCallAction(url, method, queryParams, bodyParams);
             action.$ = this._references;
             return action;
         }
