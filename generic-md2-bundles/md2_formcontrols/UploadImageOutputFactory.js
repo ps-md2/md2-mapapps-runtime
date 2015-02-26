@@ -20,9 +20,10 @@ function (declare, d_domconstruct, ct_url, _Control, _WidgetBase) {
             }
             var dimStyle = (h ? "height:" + h + "%;" : "") + (w ? "width:" + w + "%;" : "");
             
-            // get image src
-            //var src = ct_url.resourceURL("http://localhost:9090/proxy?http://localhost:8080/?"+this.value);
-            //src: src, 
+            // image src is mixed in from _updateValue of the control class.
+            // There, all calls to widget.set("src") are routed to 
+            // this.imageNode.src, as a result of the "_setSrcAttr" attribute above.
+           
             this.imageNode = d_domconstruct.create("img", {style: dimStyle});
             var outer = d_domconstruct.create("div", {style: "width:100%;"});
             d_domconstruct.place(this.imageNode, outer);
@@ -61,7 +62,7 @@ function (declare, d_domconstruct, ct_url, _Control, _WidgetBase) {
                 widget.set(newVal);
                 return;
             }
-            var src = ct_url.resourceURL("http://localhost:9090/proxy?http://localhost:8080/?"+newVal);
+            var src = ct_url.resourceURL(this.fileOutputServlet + "?file=" + newVal);
             widget.set("src", src);
         }
     });
@@ -69,6 +70,7 @@ function (declare, d_domconstruct, ct_url, _Control, _WidgetBase) {
     return declare([], /** @lends dataform.controls.FormControlFactory.prototype */{
         
         createFormControl: function(widgetParams) {
+            widgetParams.fileOutputServlet = this._properties.fileOutputServlet;
             return new UploadImageOutputControl(widgetParams);
         }
         
