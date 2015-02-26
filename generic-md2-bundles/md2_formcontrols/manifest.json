@@ -48,6 +48,13 @@
             }
         },
         {
+            "name": "UploadImageOutputFactory",
+            "provides": "dataform.ControlFactory",
+            "properties": {
+                "dataformtype": "uploadimageoutput"
+            }
+        },
+        {
             "name": "GridPanelFactory",
             "provides": "dataform.ControlFactory",
             "properties": {
