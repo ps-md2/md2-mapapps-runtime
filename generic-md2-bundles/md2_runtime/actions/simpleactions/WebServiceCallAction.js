@@ -10,6 +10,7 @@ define([
 function(declare, lang, json, xhr, ct_lang, ct_request, _Action) {
     
     return declare([_Action], {
+        $: {},
         _backendUrl: undefined,
         _actionSignature: undefined,
         _url: undefined,
@@ -17,7 +18,7 @@ function(declare, lang, json, xhr, ct_lang, ct_request, _Action) {
         _queryParams: undefined,
         _bodyParams: undefined,
         
-        constructor: function(url, method, queryParams, bodyParams) {            
+        constructor: function(url, method, queryParams, bodyParams) {
             this._backendUrl = "http://localhost:8080/CurrentStateProject.backend/service/externalWS/callExternalWS";
             this._actionSignature = "WebserviceCallAction$$" + url + method + queryParams + bodyParams;
             this._url = url;
@@ -27,6 +28,8 @@ function(declare, lang, json, xhr, ct_lang, ct_request, _Action) {
         },
         
         execute: function() {
+            
+            var logService = this.$.notificationService;
             
             this._loadValuesFromContentProvider(this._queryParams);
             this._loadValuesFromContentProvider(this._bodyParams);
@@ -44,8 +47,15 @@ function(declare, lang, json, xhr, ct_lang, ct_request, _Action) {
                 }),
                 handleAs: "json",
                 headers : headers
+            }).then(function(data){
+                logService.info({
+                    message: "Request to the WebService was successful!"
+                });
+            }, function(err){
+                logService.error({
+                    message: "Request to the WebService was unsuccessful!"
+                });
             });
-            
         },
         
         _loadValuesFromContentProvider: function(obj) {
