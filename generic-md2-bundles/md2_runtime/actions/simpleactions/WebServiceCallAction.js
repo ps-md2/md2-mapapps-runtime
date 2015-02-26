@@ -10,14 +10,15 @@ define([
 function(declare, lang, json, xhr, ct_lang, ct_request, _Action) {
     
     return declare([_Action], {
-        _backendUrl: "http://localhost:8080/CurrentStateProject.backend/service/externalWS/callExternalWS",
+        _backendUrl: undefined,
         _actionSignature: undefined,
         _url: undefined,
         _method: undefined,
         _queryParams: undefined,
         _bodyParams: undefined,
         
-        constructor: function(url, method, queryParams, bodyParams) {
+        constructor: function(url, method, queryParams, bodyParams) {            
+            this._backendUrl = "http://localhost:8080/CurrentStateProject.backend/service/externalWS/callExternalWS";
             this._actionSignature = "WebserviceCallAction$$" + url + method + queryParams + bodyParams;
             this._url = url;
             this._method = method;
@@ -26,6 +27,9 @@ function(declare, lang, json, xhr, ct_lang, ct_request, _Action) {
         },
         
         execute: function() {
+            
+            this._loadValuesFromContentProvider(this._queryParams);
+            this._loadValuesFromContentProvider(this._bodyParams);
             
             var headers = {
                 "Content-Type": "application/json"
@@ -42,6 +46,14 @@ function(declare, lang, json, xhr, ct_lang, ct_request, _Action) {
                 headers : headers
             });
             
-        } 
+        },
+        
+        _loadValuesFromContentProvider: function(obj) {
+            for (var k in obj) {
+                if (obj.hasOwnProperty(k) && typeof obj[k] === 'function') {
+                    obj[k] = obj[k]()._platformValue;
+                }
+            }
+        }
     });
 });
