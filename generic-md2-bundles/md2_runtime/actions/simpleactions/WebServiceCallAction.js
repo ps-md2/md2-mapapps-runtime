@@ -58,6 +58,12 @@ function(declare, lang, json, xhr, ct_lang, ct_request, _Action) {
             });
         },
         
+        /**
+         * Iterates over all values of a given object.
+         * If the value is of type function, execute it.
+         * This is used to retrieve values from the content provider prior to the XHR request.
+         * @param {type} obj a JavaScript object.
+         */
         _loadValuesFromContentProvider: function(obj) {
             for (var k in obj) {
                 if (obj.hasOwnProperty(k) && typeof obj[k] === 'function') {
