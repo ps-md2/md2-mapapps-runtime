@@ -4,6 +4,7 @@ define([
     "./TooltipFactory",
     "./DateTimeBoxFactory",
     "./ImageFactory",
+    "./UploadImageOutputFactory",
     "./GridPanelFactory",
     "./StackContainerFactory"
 ], {});
