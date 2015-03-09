@@ -30,9 +30,12 @@ define([
         
         _customActions: null,
         
-        constructor: function(customActions, $) {
+        _webserviceBackendUri: null,
+        
+        constructor: function(customActions, $, webserviceBackendUri) {
             this._references = $;
             this._customActions = customActions;
+            this._webserviceBackendUri = webserviceBackendUri;
         },
         
         getCustomAction: function(name) {
@@ -107,7 +110,7 @@ define([
         },
         
         getWebServiceCallAction: function(url, method, queryParams, bodyParams){
-            var action = new WebServiceCallAction(url, method, queryParams, bodyParams);
+            var action = new WebServiceCallAction(url, method, queryParams, bodyParams, this._webserviceBackendUri);
             action.$ = this._references;
             return action;
         }

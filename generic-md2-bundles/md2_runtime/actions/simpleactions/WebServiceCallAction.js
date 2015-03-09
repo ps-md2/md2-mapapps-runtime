@@ -18,8 +18,8 @@ function(declare, lang, json, xhr, ct_lang, ct_request, _Action) {
         _queryParams: undefined,
         _bodyParams: undefined,
         
-        constructor: function(url, method, queryParams, bodyParams) {
-            this._backendUrl = "http://localhost:8080/CurrentStateProject.backend/service/externalWS/callExternalWS";
+        constructor: function(url, method, queryParams, bodyParams, webserviceBackendUri) {
+            this._backendUrl = webserviceBackendUri + "externalWS/callExternalWS";
             this._actionSignature = "WebserviceCallAction$$" + url + method + queryParams + bodyParams;
             this._url = url;
             this._method = method;

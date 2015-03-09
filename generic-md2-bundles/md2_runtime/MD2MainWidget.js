@@ -181,6 +181,9 @@ define([
             // ID of this workflow element
             var wfeId = this._dataFormBean.id;
             
+            // URL of the backend containing the custom webservice proxy
+            var webserviceBackendUri = this._dataFormBean.webserviceBackendUri;
+            
             // injected notification service
             var notificationService = this._notificationService;
             
@@ -215,7 +218,7 @@ define([
             
             var validatorFactory = new ValidatorFactory();
             
-            var actionFactory = new ActionFactory(customActions, $);
+            var actionFactory = new ActionFactory(customActions, $, webserviceBackendUri);
             this._actionFactory = actionFactory;
             
             this._window = this._createWindow(wfeId, viewManager);
