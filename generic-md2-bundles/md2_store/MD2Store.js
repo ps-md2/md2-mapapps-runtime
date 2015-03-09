@@ -121,7 +121,7 @@ define([
             var jsObject = this._translateToJSTypes(object);
             
             var headers = lang.mixin({
-                "Content-Type": "application/json",
+                "Content-Type": "application/json; charset=UTF-8",
                 Accept: this.accepts
             }, this.headers, options.headers || {});
             
