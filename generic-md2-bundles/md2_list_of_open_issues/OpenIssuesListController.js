@@ -55,7 +55,7 @@ define(["dojo/_base/declare",
                 },
                 _createDataView: function(){
                     var i18n = this.i18n.grid.dataView;
-                    var dataView = this._dataView = new DataView({
+                    var dataView = new DataView({
                         i18n: i18n,
                         showFilter: true,
                         filterDuringKeyUp: true,
