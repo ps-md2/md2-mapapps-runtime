@@ -66,8 +66,8 @@ function(declare, lang, json, xhr, ct_lang, ct_request, _Action) {
          */
         _loadValuesFromContentProvider: function(obj) {
             for (var k in obj) {
-                if (obj.hasOwnProperty(k) && typeof obj[k] === 'function') {
-                    obj[k] = obj[k]()._platformValue;
+                if (obj.hasOwnProperty(k) && typeof obj[k].value === 'function') {
+                    obj[k].value = obj[k].value()._platformValue;
                 }
             }
         }
