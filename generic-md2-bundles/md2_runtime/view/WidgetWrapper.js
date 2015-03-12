@@ -42,11 +42,11 @@ function(declare, lang, array, topic, string) {
          */
         _topicOnChange: "md2/widget/onChange/${appId}",
         
-        constructor: function(identifier, datatype, defaultValue, typeFactory, appId) {
+        constructor: function(identifier, datatype, defaultValue, typeFactory, appId, params) {
             this._events = [];
             this._validators = [];
             this._state = {
-                disabled: false,
+                disabled: params.disabled || false,
                 currentValue: null
             };
             
