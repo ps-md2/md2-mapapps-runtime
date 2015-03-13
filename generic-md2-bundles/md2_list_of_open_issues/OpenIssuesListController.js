@@ -54,7 +54,7 @@ define(["dojo/_base/declare",
                             mainWidget.startWorkflow(result.contentProviderIds, result.instanceId);
                         });
                     }); 
-                    this._updateDataInterval = window.setInterval(lang.hitch(this, "_updateData"), 1000);
+                    this._updateDataInterval = window.setInterval(lang.hitch(this, "_updateData"), 5000);
                    
                     return dataView;
                 },
