@@ -12,6 +12,7 @@ define(["dojo/_base/declare",
                         title: "Title",
                         dataView: {
                             DGRID: {
+                                loadingMessage: "Fetching incoming workflows from backend, please wait...",
                                 noDataMessage: "No incoming workflows found."
                             },
                             pager: {
