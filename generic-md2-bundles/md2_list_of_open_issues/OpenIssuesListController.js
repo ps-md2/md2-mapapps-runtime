@@ -4,8 +4,9 @@ define(["dojo/_base/declare",
     "ct/Stateful",
     "ct/ui/controls/dataview/DataViewModel",
     "ct/ui/controls/dataview/DataView",
-    "ct/store/ComplexMemory"],
-        function (declare, array, _Connect, Stateful, DataViewModel, DataView, ComplexMemory) {
+    "ct/store/ComplexMemory",
+    "dojo/_base/lang"],
+        function (declare, array, _Connect, Stateful, DataViewModel, DataView, ComplexMemory, lang) {
             return declare([_Connect], {
                 i18n: {
                     grid: {
@@ -33,6 +34,7 @@ define(["dojo/_base/declare",
                 },
                 destroyInstance: function (widget) {
                     this.disconnect();
+                    clearInterval(this._updateDataInterval);
                     widget.destroyRecursive();
                 },
                 build_dataView: function(){
@@ -51,7 +53,9 @@ define(["dojo/_base/declare",
                             that._workflowStateHandler.setLastStartedTool(null);
                             mainWidget.startWorkflow(result.contentProviderIds, result.instanceId);
                         });
-                    });
+                    }); 
+                    this._updateDataInterval = window.setInterval(lang.hitch(this, "_updateData"), 1000);
+                   
                     return dataView;
                 },
                 _createDataView: function(){
@@ -103,8 +107,11 @@ define(["dojo/_base/declare",
                         }
                     });
                     return dataView;
+                },
+                _updateData: function() {
+                    // called periodically to refresh the list's contents
+                    this._dataView.updateView();
                 }
-               
             });
         });
         
