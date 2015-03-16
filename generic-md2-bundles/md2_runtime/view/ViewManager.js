@@ -172,7 +172,7 @@ function(declare, lang, array, domConstruct, domGeometry, ct_lang, Hash, WidgetW
                 var defaultValue = child.defaultValue;
                 var typeFactory = this._typeFactory;
                 var appId = this._appId;
-                var widgetWrapper = new WidgetWrapper(id, datatype, defaultValue, typeFactory, appId);
+                var widgetWrapper = new WidgetWrapper(id, datatype, defaultValue, typeFactory, appId, child);
                 this._widgetRegistry.add(widgetWrapper);
                 
                 this._addSubViewToHierarchyHash(child, currentParentView);
