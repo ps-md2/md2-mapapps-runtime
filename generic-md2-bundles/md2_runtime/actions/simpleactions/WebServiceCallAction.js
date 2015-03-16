@@ -35,7 +35,7 @@ function(declare, lang, json, xhr, ct_lang, ct_request, _Action) {
             this._loadValuesFromContentProvider(this._bodyParams);
             
             var headers = {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json; charset=UTF-8"
             };
             
             return xhr.post(ct_request.getProxiedUrl(this._backendUrl, true), {
