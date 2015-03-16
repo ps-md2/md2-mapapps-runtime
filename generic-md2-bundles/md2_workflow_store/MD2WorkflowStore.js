@@ -88,7 +88,7 @@ define([
                 url: url + "filteredOpenIssues/",
                 content: parameters
             }), function(response) {
-                var result = response; // (assume response is always an array with >= 0 elements. (Was: lang.isArray(response) ? response : [response];)
+                var result = lang.isArray(response) ? response : []; // (DO NOT assume response is always an array with >= 0 elements!!)
                 var total = result.length;
                 result = StoreUtil.sort(result, options);
                 result.total = total;
