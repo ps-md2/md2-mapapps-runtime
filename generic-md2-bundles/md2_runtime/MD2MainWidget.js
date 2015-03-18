@@ -304,7 +304,7 @@ define([
                 this._startedWorkflowInstanceId = instanceId;
                 this._workflowStateHandler.setCurrentActiveWorkflowInstance(instanceId);
             } else {
-                this._startedWorkflowInstanceI = this._workflowStateHandler.getCurrentActiveWorkflowInstance(instanceId);
+                this._startedWorkflowInstanceId = this._workflowStateHandler.getCurrentActiveWorkflowInstance(instanceId);
             }
         },
         
