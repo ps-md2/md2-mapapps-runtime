@@ -152,6 +152,11 @@ define([
                                 "name": "lastEventFired",
                                 "type": "string",
                                 "identifier" : false
+                            },{
+                                "title": "lastUpdated",
+                                "name": "lastUpdated",
+                                "type": "datetime",
+                                "identifier" : false
                             }]
                         };
                     }

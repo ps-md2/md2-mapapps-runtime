@@ -73,13 +73,6 @@ define(["dojo/_base/declare",
                             columns: [//can filter the columns to be shown
                                 {
                                     "matches": {
-                                      "name": "instanceId"
-                                    },
-                                      "title": "ID",
-                                      "width": 50
-                                },
-                                {
-                                    "matches": {
                                       "name": "currentWorkflowElement"
                                     },
                                       "title": "Workflow Element"
@@ -90,13 +83,13 @@ define(["dojo/_base/declare",
                                     },
                                       "title": "Last Event Fired"
                                 },
-                                /*{
+                                {
                                     "matches": {
-                                      "name": "waitingSince"
+                                      "name": "lastUpdated"
                                     },
-                                      "title": "Waiting Since"
+                                      "title": "Last Updated"
                                 }
-                                ,{ //Maybe use this for generic column filtering
+                                /*,{ //Maybe use this for generic column filtering
                                     matches: {
                                         name: {
                                             $eq: "id"
