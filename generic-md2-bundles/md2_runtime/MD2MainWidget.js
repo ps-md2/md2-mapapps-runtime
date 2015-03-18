@@ -71,7 +71,7 @@ define([
             // first, check if there is a running workflowInstance
             // in case it is, the function value of 'getWorkflowInstanceId'
             // is already set, otherwise it is null...
-            if(this.getActiveWorkflowInstanceId() === null) {
+            if(this.getActiveWorkflowInstanceId() === null && instanceId === null) {
                 this.$.workflowEventHandler.resetAll();
                 
                 // restore contentProviders
