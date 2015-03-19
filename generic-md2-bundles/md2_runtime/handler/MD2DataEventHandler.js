@@ -97,17 +97,18 @@ function(declare, lang, string, topic, domStyle) {
                     restore: "Error on restoring data"
                 };
                 
-                var logService = this._notificationService;
-                if(status === "success") {
-                    logService.info({
-                        message: successMessage[action]
-                    });
-                } else if(status === "error") {
-                    logService.error({
-                        message: errorMessage[action].concat("\n", errMsg)
-                    });
+                if (this._isActive){
+                    var logService = this._notificationService;
+                    if(status === "success") {
+                        logService.info({
+                            message: successMessage[action]
+                        });
+                    } else if(status === "error") {
+                        logService.error({
+                            message: errorMessage[action].concat("\n", errMsg)
+                        });
+                    }
                 }
-                
                 this._executeNextTask();
                 
             }));
